@@ -47,6 +47,13 @@
   header h1 {
     font-size: 22px;
     font-weight: 700;
+    cursor: pointer;
+    user-select: none;
+    -webkit-user-select: none;
+  }
+
+  header h1:active {
+    opacity: 0.65;
   }
 
   main {
@@ -137,6 +144,101 @@
     line-height: 1.45;
     background: transparent;
     color: inherit;
+  }
+
+  .field-label {
+    display: block;
+    font-size: 12px;
+    font-weight: 600;
+    color: #8e8e93;
+    margin: 12px 0 6px;
+    text-transform: uppercase;
+    letter-spacing: 0.4px;
+  }
+
+  .field-heading {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+    margin: 12px 0 6px;
+  }
+
+  .field-heading .field-label {
+    margin: 0;
+  }
+
+  .field-input {
+    width: 100%;
+    border: none;
+    outline: none;
+    font-size: 16px;
+    font-family: inherit;
+    line-height: 1.45;
+    background: transparent;
+    color: inherit;
+  }
+
+  .insert-variable-btn {
+    flex-shrink: 0;
+    background: #fff4d6;
+    color: #9a6500;
+    border-radius: 999px;
+    padding: 6px 10px;
+    font-size: 13px;
+    font-weight: 700;
+    line-height: 1;
+    transition: opacity 0.15s, transform 0.1s;
+  }
+
+  .insert-variable-btn:active {
+    opacity: 0.7;
+    transform: scale(0.97);
+  }
+
+  .variable-prefix-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin-bottom: 8px;
+  }
+
+  .manage-prefix-list {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    margin-bottom: 12px;
+  }
+
+  .manage-prefix-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+    background: #f2f2f7;
+    border-radius: 10px;
+    padding: 10px 12px;
+  }
+
+  .manage-prefix-name {
+    min-width: 0;
+    font-size: 15px;
+    font-weight: 700;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .manage-prefix-remove {
+    flex-shrink: 0;
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    background: #fff;
+    color: #ff3b30;
+    font-size: 15px;
+    font-weight: 700;
+    line-height: 1;
   }
 
   .modal-actions {
@@ -237,17 +339,73 @@
     background: #e9e9ee;
   }
 
-  .card .preview {
+  .card .content {
     flex: 1;
     min-width: 0;
+  }
+
+  .card .title {
+    font-size: 16px;
+    font-weight: 700;
+    color: #1c1c1e;
+    margin-bottom: 4px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .card .preview {
     font-size: 15px;
     line-height: 1.4;
     color: #1c1c1e;
     overflow: hidden;
     display: -webkit-box;
     -webkit-line-clamp: 2;
+    line-clamp: 2;
     -webkit-box-orient: vertical;
     word-break: break-word;
+  }
+
+  .card .tag-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4px;
+    margin-top: 8px;
+  }
+
+  .card .tag {
+    max-width: 100%;
+    background: #e5f0ff;
+    color: #0066d6;
+    border-radius: 999px;
+    padding: 3px 8px;
+    font-size: 12px;
+    font-weight: 600;
+    line-height: 1.25;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .card .variable-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4px;
+    margin-top: 6px;
+  }
+
+  .card .variable {
+    max-width: 100%;
+    background: #fff4d6;
+    color: #9a6500;
+    border-radius: 999px;
+    padding: 3px 8px;
+    font-size: 12px;
+    font-weight: 600;
+    line-height: 1.25;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
   }
 
   .card .delete-btn {
@@ -317,8 +475,26 @@
     .modal-btn.secondary {
       background: #2c2c2e;
     }
-    .card .preview {
+    .insert-variable-btn {
+      background: #4a3200;
+      color: #ffe1a3;
+    }
+    .manage-prefix-row {
+      background: #2c2c2e;
+    }
+    .manage-prefix-remove {
+      background: #1c1c1e;
+    }
+    .card .title, .card .preview {
       color: #f2f2f7;
+    }
+    .card .tag {
+      background: #063d7a;
+      color: #d6eaff;
+    }
+    .card .variable {
+      background: #4a3200;
+      color: #ffe1a3;
     }
     .card:active {
       background: #2c2c2e;
@@ -335,7 +511,7 @@
 </head>
 <body>
   <header>
-    <h1>텍스트 생성기</h1>
+    <h1 id="appTitle" role="button" tabindex="0" aria-label="변수 관리 열기">텍스트 생성기</h1>
   </header>
 
   <main>
@@ -353,10 +529,49 @@
   <div id="modalOverlay" class="modal-overlay hidden">
     <div class="modal" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
       <h2 id="modalTitle">새 카드</h2>
+      <label class="field-label" for="newTitle">제목</label>
+      <input id="newTitle" class="field-input" type="text" placeholder="카드 제목">
+      <div class="field-heading">
+        <label class="field-label" for="newText">내용</label>
+      </div>
+      <div id="variablePrefixList" class="variable-prefix-list"></div>
       <textarea id="newText" placeholder="저장할 텍스트를 입력하세요..."></textarea>
+      <label class="field-label" for="newTags">태그</label>
+      <input id="newTags" class="field-input" type="text" placeholder="요일:월요일, 요일:화요일">
       <div class="modal-actions">
         <button id="cancelBtn" class="modal-btn secondary">취소</button>
         <button id="saveBtn" class="modal-btn primary" disabled>저장</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="variableOverlay" class="modal-overlay hidden">
+    <div class="modal" role="dialog" aria-modal="true" aria-labelledby="variableTitle">
+      <h2 id="variableTitle">변수 입력</h2>
+      <div id="variableFields"></div>
+      <div class="modal-actions">
+        <button id="cancelVariableBtn" class="modal-btn secondary">취소</button>
+        <button id="generateBtn" class="modal-btn primary">생성</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="variableManageOverlay" class="modal-overlay hidden">
+    <div class="modal" role="dialog" aria-modal="true" aria-labelledby="variableManageTitle">
+      <h2 id="variableManageTitle">변수 관리</h2>
+      <label class="field-label" for="variableTypeLabel">변수 종류</label>
+      <input id="variableTypeLabel" class="field-input" type="text" placeholder="이름">
+      <div class="modal-actions">
+        <button id="addVariableTypeBtn" class="modal-btn primary">변수 종류 추가</button>
+      </div>
+      <div id="variableManageList" class="manage-prefix-list"></div>
+      <label class="field-label" for="variablePrefixType">변수 종류</label>
+      <select id="variablePrefixType" class="field-input"></select>
+      <label class="field-label" for="variablePrefixLabel">프리픽스</label>
+      <input id="variablePrefixLabel" class="field-input" type="text" placeholder="오타니">
+      <div class="modal-actions">
+        <button id="closeVariableManageBtn" class="modal-btn secondary">닫기</button>
+        <button id="addVariablePrefixBtn" class="modal-btn primary">추가</button>
       </div>
     </div>
   </div>
@@ -368,18 +583,41 @@
   'use strict';
 
   var STORAGE_KEY = 'textGenerator.items.v1';
+  var VARIABLE_PREFIX_STORAGE_KEY = 'textGenerator.variablePrefixes.v1';
+  var VARIABLE_TYPE_STORAGE_KEY = 'textGenerator.variableTypes.v1';
 
+  var appTitleEl = document.getElementById('appTitle');
+  var newTitleEl = document.getElementById('newTitle');
   var newTextEl = document.getElementById('newText');
+  var newTagsEl = document.getElementById('newTags');
+  var variablePrefixListEl = document.getElementById('variablePrefixList');
   var saveBtn = document.getElementById('saveBtn');
   var newCardBtn = document.getElementById('newCardBtn');
   var modalOverlay = document.getElementById('modalOverlay');
   var cancelBtn = document.getElementById('cancelBtn');
+  var variableOverlay = document.getElementById('variableOverlay');
+  var variableFieldsEl = document.getElementById('variableFields');
+  var cancelVariableBtn = document.getElementById('cancelVariableBtn');
+  var generateBtn = document.getElementById('generateBtn');
+  var variableManageOverlay = document.getElementById('variableManageOverlay');
+  var variableManageListEl = document.getElementById('variableManageList');
+  var variableTypeLabelEl = document.getElementById('variableTypeLabel');
+  var variablePrefixTypeEl = document.getElementById('variablePrefixType');
+  var variablePrefixLabelEl = document.getElementById('variablePrefixLabel');
+  var closeVariableManageBtn = document.getElementById('closeVariableManageBtn');
+  var addVariableTypeBtn = document.getElementById('addVariableTypeBtn');
+  var addVariablePrefixBtn = document.getElementById('addVariablePrefixBtn');
   var cardListEl = document.getElementById('cardList');
   var outputArea = document.getElementById('outputArea');
   var outputText = document.getElementById('outputText');
   var toastEl = document.getElementById('toast');
 
+  var VARIABLE_TYPES = loadVariableTypes();
+
+  var VARIABLE_PREFIXES = loadVariablePrefixes();
+
   var items = loadItems();
+  var activeVariableItem = null;
   var toastTimer = null;
 
   /* ---------- 저장소 ---------- */
@@ -388,10 +626,54 @@
     try {
       var raw = localStorage.getItem(STORAGE_KEY);
       var parsed = raw ? JSON.parse(raw) : [];
-      return Array.isArray(parsed) ? parsed : [];
+      return Array.isArray(parsed) ? parsed.map(normalizeItem) : [];
     } catch (e) {
       return [];
     }
+  }
+
+  function normalizeItem(item) {
+    item = item && typeof item === 'object' ? item : {};
+    var text = typeof item.text === 'string' ? item.text : '';
+    var title = typeof item.title === 'string' && item.title.trim() ? item.title.trim() : text.split('\n')[0] || '제목 없음';
+    var tags = Array.isArray(item.tags) ? item.tags.map(normalizeTag).filter(Boolean) : [];
+    var variables = Array.isArray(item.variables) ? item.variables.map(normalizeVariable).filter(Boolean) : [];
+    if (variables.length === 0) variables = extractVariablesFromText(text);
+
+    return {
+      id: item.id || Date.now().toString(36) + Math.random().toString(36).slice(2, 7),
+      title: title,
+      text: text,
+      tags: tags,
+      variables: variables,
+      createdAt: item.createdAt || Date.now()
+    };
+  }
+
+  function normalizeTag(tag) {
+    if (!tag || typeof tag !== 'object') return null;
+    var category = typeof tag.category === 'string' ? tag.category.trim() : '';
+    var name = typeof tag.name === 'string' ? tag.name.trim() : '';
+    if (!category || !name) return null;
+    return { category: category, name: name };
+  }
+
+  function normalizeVariable(variable) {
+    var name = '';
+    var type = '';
+    if (typeof variable === 'string') {
+      name = variable.trim();
+    } else if (variable && typeof variable === 'object' && typeof variable.name === 'string') {
+      name = variable.name.trim();
+      if (getVariableType(variable.type)) {
+        type = variable.type;
+      } else if (getVariableType(variable.prefixId)) {
+        type = variable.prefixId;
+      }
+    }
+    if (!name) return null;
+    if (!type) type = inferVariableType(name);
+    return { name: name, type: type };
   }
 
   function persistItems() {
@@ -400,6 +682,75 @@
     } catch (e) {
       showToast('저장에 실패했습니다');
     }
+  }
+
+  function loadVariableTypes() {
+    try {
+      var raw = localStorage.getItem(VARIABLE_TYPE_STORAGE_KEY);
+      var parsed = raw ? JSON.parse(raw) : [];
+      return Array.isArray(parsed) ? parsed.map(normalizeVariableType).filter(Boolean) : [];
+    } catch (e) {
+      return [];
+    }
+  }
+
+  function persistVariableTypes() {
+    try {
+      localStorage.setItem(VARIABLE_TYPE_STORAGE_KEY, JSON.stringify(VARIABLE_TYPES));
+    } catch (e) {
+      showToast('변수 종류 저장에 실패했습니다');
+    }
+  }
+
+  function normalizeVariableType(type) {
+    if (!type || typeof type !== 'object') return null;
+    var label = typeof type.label === 'string' ? type.label.trim() : '';
+    var baseName = typeof type.baseName === 'string' && type.baseName.trim() ? type.baseName.trim() : label.replace(/\s*변수$/, '').trim();
+
+    if (!label || !baseName) return null;
+    if (label.indexOf('변수') === -1) label += ' 변수';
+
+    return {
+      id: typeof type.id === 'string' && type.id ? type.id : createVariableTypeId(baseName),
+      label: label,
+      baseName: baseName
+    };
+  }
+
+  function loadVariablePrefixes() {
+    var prefixes = [];
+
+    try {
+      var raw = localStorage.getItem(VARIABLE_PREFIX_STORAGE_KEY);
+      var parsed = raw ? JSON.parse(raw) : [];
+      prefixes = Array.isArray(parsed) ? parsed.map(normalizeVariablePrefix).filter(Boolean) : [];
+    } catch (e) {
+      prefixes = [];
+    }
+
+    return prefixes;
+  }
+
+  function persistVariablePrefixes() {
+    try {
+      localStorage.setItem(VARIABLE_PREFIX_STORAGE_KEY, JSON.stringify(VARIABLE_PREFIXES));
+    } catch (e) {
+      showToast('변수 프리픽스 저장에 실패했습니다');
+    }
+  }
+
+  function normalizeVariablePrefix(prefix) {
+    if (!prefix || typeof prefix !== 'object') return null;
+    var label = typeof prefix.label === 'string' ? prefix.label.trim() : '';
+    var type = getVariableType(prefix.type) ? prefix.type : getVariableType(prefix.typeId) ? prefix.typeId : '';
+
+    if (!label || !type) return null;
+
+    return {
+      id: typeof prefix.id === 'string' && prefix.id ? prefix.id : createVariablePrefixId(label),
+      label: label,
+      type: type
+    };
   }
 
   /* ---------- 클립보드 ---------- */
@@ -439,6 +790,267 @@
 
   /* ---------- UI ---------- */
 
+  function parseTags(value) {
+    return value.split(',').map(function (part) {
+      var pieces = part.split(':');
+      if (pieces.length < 2) return null;
+      return normalizeTag({
+        category: pieces.shift(),
+        name: pieces.join(':')
+      });
+    }).filter(Boolean);
+  }
+
+  function extractVariablesFromText(text) {
+    var variables = [];
+    var pattern = /\[([^\[\]\n]+)\]/g;
+    var match;
+
+    while ((match = pattern.exec(text)) !== null) {
+      var name = match[1].trim();
+      if (name && !findVariableByName(variables, name)) {
+        variables.push({ name: name, type: inferVariableType(name) });
+      }
+    }
+
+    return variables.map(normalizeVariable).filter(Boolean);
+  }
+
+  function findVariableByName(variables, name) {
+    for (var index = 0; index < variables.length; index += 1) {
+      if (variables[index].name === name) return variables[index];
+    }
+    return null;
+  }
+
+  function getVariableType(typeId) {
+    for (var index = 0; index < VARIABLE_TYPES.length; index += 1) {
+      if (VARIABLE_TYPES[index].id === typeId) return VARIABLE_TYPES[index];
+    }
+    return null;
+  }
+
+  function inferVariableType(name) {
+    for (var index = 0; index < VARIABLE_TYPES.length; index += 1) {
+      var type = VARIABLE_TYPES[index];
+      if (name === type.baseName || name.indexOf(type.baseName + ' ') === 0) {
+        return type.id;
+      }
+    }
+    return VARIABLE_TYPES.length > 0 ? VARIABLE_TYPES[0].id : '';
+  }
+
+  function escapeRegExp(value) {
+    return value.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+  }
+
+  function createVariablePrefixId(label) {
+    return 'prefix-' + label.replace(/\s+/g, '-').toLowerCase() + '-' + Date.now().toString(36);
+  }
+
+  function createVariableTypeId(label) {
+    return 'type-' + label.replace(/\s+/g, '-').toLowerCase() + '-' + Date.now().toString(36);
+  }
+
+  function buildVariableTypeFromForm() {
+    var baseName = variableTypeLabelEl.value.trim();
+    if (!baseName || findVariableTypeByBaseName(baseName)) return null;
+
+    return normalizeVariableType({
+      id: createVariableTypeId(baseName),
+      label: baseName + ' 변수',
+      baseName: baseName
+    });
+  }
+
+  function findVariableTypeByBaseName(baseName) {
+    for (var index = 0; index < VARIABLE_TYPES.length; index += 1) {
+      if (VARIABLE_TYPES[index].baseName === baseName) return VARIABLE_TYPES[index];
+    }
+    return null;
+  }
+
+  function buildVariablePrefixFromForm() {
+    var label = variablePrefixLabelEl.value.trim();
+    var type = variablePrefixTypeEl.value;
+    if (!label || !getVariableType(type) || findVariablePrefixByLabel(type, label)) return null;
+
+    return normalizeVariablePrefix({
+      id: createVariablePrefixId(label),
+      label: label,
+      type: type
+    });
+  }
+
+  function findVariablePrefixByLabel(type, label) {
+    for (var index = 0; index < VARIABLE_PREFIXES.length; index += 1) {
+      if (VARIABLE_PREFIXES[index].type === type && VARIABLE_PREFIXES[index].label === label) return VARIABLE_PREFIXES[index];
+    }
+    return null;
+  }
+
+  function getNextVariableName(text, typeId) {
+    var type = getVariableType(typeId);
+    if (!type) return '';
+    var nextNumber = 1;
+    extractVariablesFromText(text).forEach(function (variable) {
+      if (variable.type !== type.id) return;
+      var match = new RegExp('^' + escapeRegExp(type.baseName) + '\\s+(\\d+)$').exec(variable.name);
+      if (match) {
+        nextNumber = Math.max(nextNumber, parseInt(match[1], 10) + 1);
+      }
+    });
+    return type.baseName + ' ' + nextNumber;
+  }
+
+  function insertTextAtCursor(textarea, text) {
+    var start = typeof textarea.selectionStart === 'number' ? textarea.selectionStart : textarea.value.length;
+    var end = typeof textarea.selectionEnd === 'number' ? textarea.selectionEnd : textarea.value.length;
+
+    textarea.value = textarea.value.slice(0, start) + text + textarea.value.slice(end);
+    textarea.focus();
+    textarea.setSelectionRange(start + text.length, start + text.length);
+  }
+
+  function formatTag(tag) {
+    return tag.category + ' · ' + tag.name;
+  }
+
+  function formatVariable(variable) {
+    var type = getVariableType(variable.type);
+    return '[' + variable.name + ']' + (type ? ' ' + type.label : '');
+  }
+
+  function renderVariablePrefixButtons() {
+    variablePrefixListEl.innerHTML = '';
+
+    VARIABLE_TYPES.forEach(function (type) {
+      var button = document.createElement('button');
+      button.className = 'insert-variable-btn';
+      button.type = 'button';
+      button.textContent = '＋ ' + type.label;
+      button.addEventListener('click', function () {
+        insertVariable(type.id);
+      });
+      variablePrefixListEl.appendChild(button);
+    });
+  }
+
+  function renderVariablePrefixTypeOptions() {
+    variablePrefixTypeEl.innerHTML = '';
+
+    if (VARIABLE_TYPES.length === 0) {
+      var emptyOption = document.createElement('option');
+      emptyOption.value = '';
+      emptyOption.textContent = '변수 종류를 먼저 추가하세요';
+      variablePrefixTypeEl.appendChild(emptyOption);
+      return;
+    }
+
+    VARIABLE_TYPES.forEach(function (type) {
+      var option = document.createElement('option');
+      option.value = type.id;
+      option.textContent = type.label;
+      variablePrefixTypeEl.appendChild(option);
+    });
+  }
+
+  function getVariablePrefixesByType(type) {
+    return VARIABLE_PREFIXES.filter(function (prefix) {
+      return prefix.type === type;
+    });
+  }
+
+  function renderVariableManageList() {
+    variableManageListEl.innerHTML = '';
+
+    VARIABLE_TYPES.forEach(function (type) {
+      var row = document.createElement('div');
+      row.className = 'manage-prefix-row';
+
+      var name = document.createElement('div');
+      name.className = 'manage-prefix-name';
+      name.textContent = '변수 종류 · ' + type.label;
+
+      row.appendChild(name);
+
+      var removeBtn = document.createElement('button');
+      removeBtn.className = 'manage-prefix-remove';
+      removeBtn.type = 'button';
+      removeBtn.textContent = '✕';
+      removeBtn.setAttribute('aria-label', type.label + ' 삭제');
+      removeBtn.addEventListener('click', function () {
+        VARIABLE_TYPES = VARIABLE_TYPES.filter(function (item) { return item.id !== type.id; });
+        VARIABLE_PREFIXES = VARIABLE_PREFIXES.filter(function (item) { return item.type !== type.id; });
+        persistVariableTypes();
+        persistVariablePrefixes();
+        renderVariablePrefixButtons();
+        renderVariablePrefixTypeOptions();
+        renderVariableManageList();
+        renderCards();
+      });
+      row.appendChild(removeBtn);
+
+      variableManageListEl.appendChild(row);
+    });
+
+    VARIABLE_PREFIXES.forEach(function (prefix) {
+      var type = getVariableType(prefix.type);
+      var row = document.createElement('div');
+      row.className = 'manage-prefix-row';
+
+      var name = document.createElement('div');
+      name.className = 'manage-prefix-name';
+      name.textContent = (type ? type.label + ' · ' : '') + prefix.label;
+
+      row.appendChild(name);
+
+      var removeBtn = document.createElement('button');
+      removeBtn.className = 'manage-prefix-remove';
+      removeBtn.type = 'button';
+      removeBtn.textContent = '✕';
+      removeBtn.setAttribute('aria-label', prefix.label + ' 삭제');
+      removeBtn.addEventListener('click', function () {
+        VARIABLE_PREFIXES = VARIABLE_PREFIXES.filter(function (item) { return item.id !== prefix.id; });
+        persistVariablePrefixes();
+        renderVariablePrefixButtons();
+        renderVariableManageList();
+        renderCards();
+      });
+      row.appendChild(removeBtn);
+
+      variableManageListEl.appendChild(row);
+    });
+  }
+
+  function insertVariable(prefixId) {
+    var name = getNextVariableName(newTextEl.value, prefixId);
+    if (!name) return;
+    insertTextAtCursor(newTextEl, '[' + name + ']');
+    updateSaveState();
+  }
+
+  function replaceAllText(text, search, replacement) {
+    return text.split(search).join(replacement);
+  }
+
+  function fillTemplate(text, values) {
+    var result = text;
+    Object.keys(values).forEach(function (name) {
+      result = replaceAllText(result, '[' + name + ']', '[' + values[name] + ']');
+    });
+    return result;
+  }
+
+  function showOutput(text) {
+    outputText.textContent = text;
+    outputArea.classList.remove('hidden');
+    outputArea.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+    copyToClipboard(text).then(function (ok) {
+      showToast(ok ? '클립보드에 복사되었습니다' : '복사에 실패했습니다');
+    });
+  }
+
   function showToast(message) {
     toastEl.textContent = message;
     toastEl.classList.add('show');
@@ -464,9 +1076,47 @@
       var card = document.createElement('div');
       card.className = 'card';
 
+      var content = document.createElement('div');
+      content.className = 'content';
+
+      var title = document.createElement('div');
+      title.className = 'title';
+      title.textContent = item.title;
+
       var preview = document.createElement('div');
       preview.className = 'preview';
       preview.textContent = item.text;
+
+      content.appendChild(title);
+      content.appendChild(preview);
+
+      if (item.tags.length > 0) {
+        var tagList = document.createElement('div');
+        tagList.className = 'tag-list';
+
+        item.tags.forEach(function (tag) {
+          var tagEl = document.createElement('span');
+          tagEl.className = 'tag';
+          tagEl.textContent = formatTag(tag);
+          tagList.appendChild(tagEl);
+        });
+
+        content.appendChild(tagList);
+      }
+
+      if (item.variables.length > 0) {
+        var variableList = document.createElement('div');
+        variableList.className = 'variable-list';
+
+        item.variables.forEach(function (variable) {
+          var variableEl = document.createElement('span');
+          variableEl.className = 'variable';
+          variableEl.textContent = formatVariable(variable);
+          variableList.appendChild(variableEl);
+        });
+
+        content.appendChild(variableList);
+      }
 
       var deleteBtn = document.createElement('button');
       deleteBtn.className = 'delete-btn';
@@ -475,12 +1125,11 @@
 
       // 카드 터치 → 출력 + 복사
       card.addEventListener('click', function () {
-        outputText.textContent = item.text;
-        outputArea.classList.remove('hidden');
-        outputArea.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
-        copyToClipboard(item.text).then(function (ok) {
-          showToast(ok ? '클립보드에 복사되었습니다' : '복사에 실패했습니다');
-        });
+        if (item.variables.length > 0) {
+          openVariableModal(item);
+          return;
+        }
+        showOutput(item.text);
       });
 
       // 삭제 버튼 (이벤트 전파 중단)
@@ -492,7 +1141,7 @@
         showToast('삭제되었습니다');
       });
 
-      card.appendChild(preview);
+      card.appendChild(content);
       card.appendChild(deleteBtn);
       cardListEl.appendChild(card);
     });
@@ -503,10 +1152,12 @@
   function openModal() {
     modalOverlay.classList.remove('hidden');
     document.body.classList.add('modal-open');
+    newTitleEl.value = '';
     newTextEl.value = '';
+    newTagsEl.value = '';
     saveBtn.disabled = true;
     // 사용자 제스처 내에서 focus해야 iOS 키보드가 바로 열림
-    newTextEl.focus();
+    newTitleEl.focus();
   }
 
   function closeModal() {
@@ -515,32 +1166,167 @@
     newTextEl.blur();
   }
 
+  function openVariableModal(item) {
+    activeVariableItem = item;
+    variableFieldsEl.innerHTML = '';
+
+    item.variables.forEach(function (variable, index) {
+      var label = document.createElement('label');
+      label.className = 'field-label';
+      label.setAttribute('for', 'variableInput' + index);
+      label.textContent = formatVariable(variable);
+
+      var input = document.createElement('input');
+      input.id = 'variableInput' + index;
+      input.className = 'field-input variable-input';
+      input.type = 'text';
+      input.dataset.variableName = variable.name;
+      input.dataset.variableType = variable.type;
+      input.placeholder = variable.name + ' 값';
+
+      variableFieldsEl.appendChild(label);
+      variableFieldsEl.appendChild(input);
+
+      var prefixes = getVariablePrefixesByType(variable.type);
+      if (prefixes.length > 0) {
+        var prefixList = document.createElement('div');
+        prefixList.className = 'variable-prefix-list';
+
+        prefixes.forEach(function (prefix) {
+          var prefixBtn = document.createElement('button');
+          prefixBtn.className = 'insert-variable-btn';
+          prefixBtn.type = 'button';
+          prefixBtn.textContent = prefix.label;
+          prefixBtn.addEventListener('click', function () {
+            input.value = prefix.label;
+            input.focus();
+          });
+          prefixList.appendChild(prefixBtn);
+        });
+
+        variableFieldsEl.appendChild(prefixList);
+      }
+    });
+
+    variableOverlay.classList.remove('hidden');
+    document.body.classList.add('modal-open');
+
+    var firstInput = variableFieldsEl.querySelector('input');
+    if (firstInput) firstInput.focus();
+  }
+
+  function closeVariableModal() {
+    variableOverlay.classList.add('hidden');
+    document.body.classList.remove('modal-open');
+    activeVariableItem = null;
+  }
+
+  function openVariableManageModal() {
+    renderVariablePrefixTypeOptions();
+    renderVariableManageList();
+    variablePrefixTypeEl.value = VARIABLE_TYPES.length > 0 ? VARIABLE_TYPES[0].id : '';
+    variableTypeLabelEl.value = '';
+    variablePrefixLabelEl.value = '';
+    variableManageOverlay.classList.remove('hidden');
+    document.body.classList.add('modal-open');
+    variablePrefixLabelEl.focus();
+  }
+
+  function closeVariableManageModal() {
+    variableManageOverlay.classList.add('hidden');
+    document.body.classList.remove('modal-open');
+  }
+
   /* ---------- 이벤트 ---------- */
 
   newCardBtn.addEventListener('click', openModal);
   cancelBtn.addEventListener('click', closeModal);
+  cancelVariableBtn.addEventListener('click', closeVariableModal);
+  closeVariableManageBtn.addEventListener('click', closeVariableManageModal);
+
+  appTitleEl.addEventListener('click', openVariableManageModal);
+  appTitleEl.addEventListener('keydown', function (e) {
+    if (e.key === 'Enter' || e.key === ' ') {
+      e.preventDefault();
+      openVariableManageModal();
+    }
+  });
 
   modalOverlay.addEventListener('click', function (e) {
     if (e.target === modalOverlay) closeModal();
+  });
+
+  variableOverlay.addEventListener('click', function (e) {
+    if (e.target === variableOverlay) closeVariableModal();
+  });
+
+  variableManageOverlay.addEventListener('click', function (e) {
+    if (e.target === variableManageOverlay) closeVariableManageModal();
   });
 
   document.addEventListener('keydown', function (e) {
     if (e.key === 'Escape' && !modalOverlay.classList.contains('hidden')) {
       closeModal();
     }
+    if (e.key === 'Escape' && !variableOverlay.classList.contains('hidden')) {
+      closeVariableModal();
+    }
+    if (e.key === 'Escape' && !variableManageOverlay.classList.contains('hidden')) {
+      closeVariableManageModal();
+    }
   });
 
-  newTextEl.addEventListener('input', function () {
-    saveBtn.disabled = newTextEl.value.trim().length === 0;
+  function updateSaveState() {
+    saveBtn.disabled = newTitleEl.value.trim().length === 0 || newTextEl.value.trim().length === 0;
+  }
+
+  newTitleEl.addEventListener('input', updateSaveState);
+  newTextEl.addEventListener('input', updateSaveState);
+
+  addVariableTypeBtn.addEventListener('click', function () {
+    var type = buildVariableTypeFromForm();
+    if (!type) {
+      showToast('변수 종류를 확인해 주세요');
+      return;
+    }
+
+    VARIABLE_TYPES.push(type);
+    persistVariableTypes();
+    renderVariablePrefixButtons();
+    renderVariablePrefixTypeOptions();
+    renderVariableManageList();
+    variablePrefixTypeEl.value = type.id;
+    variableTypeLabelEl.value = '';
+    showToast('변수 종류가 추가되었습니다');
+  });
+
+  addVariablePrefixBtn.addEventListener('click', function () {
+    var prefix = buildVariablePrefixFromForm();
+    if (!prefix) {
+      showToast('프리픽스를 확인해 주세요');
+      return;
+    }
+
+    VARIABLE_PREFIXES.push(prefix);
+    persistVariablePrefixes();
+    renderVariablePrefixButtons();
+    renderVariableManageList();
+    renderCards();
+    variablePrefixLabelEl.value = '';
+    showToast('프리픽스가 추가되었습니다');
   });
 
   saveBtn.addEventListener('click', function () {
+    var title = newTitleEl.value.trim();
     var text = newTextEl.value.trim();
-    if (!text) return;
+    if (!title || !text) return;
 
     items.unshift({
       id: Date.now().toString(36) + Math.random().toString(36).slice(2, 7),
+      title: title,
       text: text,
+      tags: parseTags(newTagsEl.value),
+      variables: extractVariablesFromText(text),
       createdAt: Date.now()
     });
     persistItems();
@@ -550,8 +1336,22 @@
     showToast('저장되었습니다');
   });
 
+  generateBtn.addEventListener('click', function () {
+    if (!activeVariableItem) return;
+
+    var values = {};
+    Array.prototype.forEach.call(variableFieldsEl.querySelectorAll('input'), function (input) {
+      values[input.dataset.variableName] = input.value.trim();
+    });
+
+    showOutput(fillTemplate(activeVariableItem.text, values));
+    closeVariableModal();
+  });
+
   /* ---------- 초기화 ---------- */
 
+  renderVariablePrefixButtons();
+  renderVariablePrefixTypeOptions();
   renderCards();
 })();
 </script>

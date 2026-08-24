@@ -1,0 +1,559 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, user-scalable=no">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="텍스트생성기">
+<meta name="theme-color" content="#f2f2f7">
+<title>텍스트 생성기</title>
+<style>
+  * {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  html {
+    height: 100%;
+    -webkit-text-size-adjust: 100%;
+  }
+
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Noto Sans KR", sans-serif;
+    background: #f2f2f7;
+    color: #1c1c1e;
+    min-height: 100%;
+    padding-top: env(safe-area-inset-top);
+    padding-bottom: env(safe-area-inset-bottom);
+    padding-left: env(safe-area-inset-left);
+    padding-right: env(safe-area-inset-right);
+  }
+
+  header {
+    position: sticky;
+    top: 0;
+    z-index: 10;
+    background: rgba(242, 242, 247, 0.9);
+    -webkit-backdrop-filter: blur(20px);
+    backdrop-filter: blur(20px);
+    padding: 16px 20px 12px;
+    border-bottom: 0.5px solid rgba(0, 0, 0, 0.1);
+  }
+
+  header h1 {
+    font-size: 22px;
+    font-weight: 700;
+  }
+
+  main {
+    padding: 16px;
+    max-width: 680px;
+    margin: 0 auto;
+  }
+
+  /* 새 카드 버튼 */
+  .new-card-btn {
+    width: 100%;
+    background: #007aff;
+    color: #fff;
+    font-size: 17px;
+    font-weight: 600;
+    padding: 14px;
+    border-radius: 14px;
+    margin-bottom: 16px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06);
+    transition: opacity 0.15s, transform 0.1s;
+  }
+
+  .new-card-btn:active {
+    opacity: 0.7;
+    transform: scale(0.98);
+  }
+
+  button {
+    font-family: inherit;
+    border: none;
+    cursor: pointer;
+    user-select: none;
+    -webkit-user-select: none;
+  }
+
+  /* 모달 */
+  body.modal-open {
+    overflow: hidden;
+  }
+
+  .modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.4);
+    z-index: 50;
+    display: flex;
+    align-items: flex-start;
+    justify-content: center;
+    padding: calc(72px + env(safe-area-inset-top)) 16px 16px;
+  }
+
+  .modal-overlay.hidden {
+    display: none;
+  }
+
+  .modal {
+    background: #fff;
+    border-radius: 14px;
+    width: 100%;
+    max-width: 520px;
+    padding: 16px;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+    animation: modalIn 0.2s ease-out;
+  }
+
+  @keyframes modalIn {
+    from { transform: translateY(12px) scale(0.97); opacity: 0; }
+    to { transform: translateY(0) scale(1); opacity: 1; }
+  }
+
+  .modal h2 {
+    font-size: 17px;
+    font-weight: 700;
+    margin-bottom: 10px;
+  }
+
+  textarea#newText {
+    width: 100%;
+    min-height: 120px;
+    border: none;
+    outline: none;
+    resize: none;
+    font-size: 16px; /* iOS 자동 줌 방지 */
+    font-family: inherit;
+    line-height: 1.45;
+    background: transparent;
+    color: inherit;
+  }
+
+  .modal-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 8px;
+    margin-top: 8px;
+  }
+
+  .modal-btn {
+    font-size: 16px;
+    font-weight: 600;
+    padding: 10px 20px;
+    border-radius: 10px;
+    transition: opacity 0.15s, transform 0.1s;
+  }
+
+  .modal-btn:active {
+    opacity: 0.7;
+    transform: scale(0.97);
+  }
+
+  .modal-btn.primary {
+    background: #007aff;
+    color: #fff;
+  }
+
+  .modal-btn.primary:disabled {
+    background: #c7c7cc;
+  }
+
+  .modal-btn.secondary {
+    background: #f2f2f7;
+    color: #007aff;
+  }
+
+  /* 출력 영역 */
+  .output-area {
+    background: #fff;
+    border-radius: 14px;
+    padding: 14px 16px;
+    margin-bottom: 16px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06);
+    border: 1.5px solid #007aff;
+  }
+
+  .output-area .label {
+    font-size: 12px;
+    font-weight: 600;
+    color: #007aff;
+    margin-bottom: 6px;
+    text-transform: uppercase;
+    letter-spacing: 0.4px;
+  }
+
+  .output-area .text {
+    font-size: 16px;
+    line-height: 1.5;
+    white-space: pre-wrap;
+    word-break: break-word;
+    user-select: text;
+    -webkit-user-select: text;
+  }
+
+  .hidden {
+    display: none;
+  }
+
+  /* 카드 목록 */
+  .section-title {
+    font-size: 13px;
+    font-weight: 600;
+    color: #8e8e93;
+    margin: 4px 4px 8px;
+    text-transform: uppercase;
+    letter-spacing: 0.4px;
+  }
+
+  #cardList {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .card {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    background: #fff;
+    border-radius: 14px;
+    padding: 14px 12px 14px 16px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06);
+    transition: transform 0.1s, background 0.15s;
+  }
+
+  .card:active {
+    transform: scale(0.98);
+    background: #e9e9ee;
+  }
+
+  .card .preview {
+    flex: 1;
+    min-width: 0;
+    font-size: 15px;
+    line-height: 1.4;
+    color: #1c1c1e;
+    overflow: hidden;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    word-break: break-word;
+  }
+
+  .card .delete-btn {
+    flex-shrink: 0;
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    background: #f2f2f7;
+    color: #ff3b30;
+    font-size: 16px;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    line-height: 1;
+  }
+
+  .card .delete-btn:active {
+    background: #ff3b30;
+    color: #fff;
+  }
+
+  .empty-state {
+    text-align: center;
+    color: #8e8e93;
+    font-size: 15px;
+    padding: 40px 20px;
+  }
+
+  /* 토스트 */
+  #toast {
+    position: fixed;
+    left: 50%;
+    bottom: calc(32px + env(safe-area-inset-bottom));
+    transform: translateX(-50%) translateY(20px);
+    background: rgba(28, 28, 30, 0.92);
+    color: #fff;
+    font-size: 15px;
+    font-weight: 500;
+    padding: 12px 22px;
+    border-radius: 24px;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.25s, transform 0.25s;
+    z-index: 100;
+  }
+
+  #toast.show {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0);
+  }
+
+  /* 다크모드 */
+  @media (prefers-color-scheme: dark) {
+    body {
+      background: #000;
+      color: #f2f2f7;
+    }
+    header {
+      background: rgba(0, 0, 0, 0.85);
+      border-bottom-color: rgba(255, 255, 255, 0.12);
+    }
+    .card, .output-area, .modal {
+      background: #1c1c1e;
+      box-shadow: none;
+    }
+    .modal-btn.secondary {
+      background: #2c2c2e;
+    }
+    .card .preview {
+      color: #f2f2f7;
+    }
+    .card:active {
+      background: #2c2c2e;
+    }
+    .card .delete-btn {
+      background: #2c2c2e;
+    }
+    #toast {
+      background: rgba(242, 242, 247, 0.92);
+      color: #1c1c1e;
+    }
+  }
+</style>
+</head>
+<body>
+  <header>
+    <h1>텍스트 생성기</h1>
+  </header>
+
+  <main>
+    <button id="newCardBtn" class="new-card-btn">＋ 새 카드</button>
+
+    <div id="outputArea" class="output-area hidden">
+      <div class="label">출력 · 클립보드에 복사됨</div>
+      <div id="outputText" class="text"></div>
+    </div>
+
+    <div class="section-title">저장된 카드</div>
+    <div id="cardList"></div>
+  </main>
+
+  <div id="modalOverlay" class="modal-overlay hidden">
+    <div class="modal" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+      <h2 id="modalTitle">새 카드</h2>
+      <textarea id="newText" placeholder="저장할 텍스트를 입력하세요..."></textarea>
+      <div class="modal-actions">
+        <button id="cancelBtn" class="modal-btn secondary">취소</button>
+        <button id="saveBtn" class="modal-btn primary" disabled>저장</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="toast"></div>
+
+<script>
+(function () {
+  'use strict';
+
+  var STORAGE_KEY = 'textGenerator.items.v1';
+
+  var newTextEl = document.getElementById('newText');
+  var saveBtn = document.getElementById('saveBtn');
+  var newCardBtn = document.getElementById('newCardBtn');
+  var modalOverlay = document.getElementById('modalOverlay');
+  var cancelBtn = document.getElementById('cancelBtn');
+  var cardListEl = document.getElementById('cardList');
+  var outputArea = document.getElementById('outputArea');
+  var outputText = document.getElementById('outputText');
+  var toastEl = document.getElementById('toast');
+
+  var items = loadItems();
+  var toastTimer = null;
+
+  /* ---------- 저장소 ---------- */
+
+  function loadItems() {
+    try {
+      var raw = localStorage.getItem(STORAGE_KEY);
+      var parsed = raw ? JSON.parse(raw) : [];
+      return Array.isArray(parsed) ? parsed : [];
+    } catch (e) {
+      return [];
+    }
+  }
+
+  function persistItems() {
+    try {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(items));
+    } catch (e) {
+      showToast('저장에 실패했습니다');
+    }
+  }
+
+  /* ---------- 클립보드 ---------- */
+
+  function copyToClipboard(text) {
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      return navigator.clipboard.writeText(text).then(function () {
+        return true;
+      }).catch(function () {
+        return fallbackCopy(text);
+      });
+    }
+    return Promise.resolve(fallbackCopy(text));
+  }
+
+  function fallbackCopy(text) {
+    var ta = document.createElement('textarea');
+    ta.value = text;
+    ta.setAttribute('readonly', '');
+    ta.style.position = 'fixed';
+    ta.style.top = '0';
+    ta.style.left = '-9999px';
+    ta.style.opacity = '0';
+    document.body.appendChild(ta);
+    ta.focus();
+    ta.select();
+    ta.setSelectionRange(0, ta.value.length); // iOS Safari 대응
+    var ok = false;
+    try {
+      ok = document.execCommand('copy');
+    } catch (e) {
+      ok = false;
+    }
+    document.body.removeChild(ta);
+    return ok;
+  }
+
+  /* ---------- UI ---------- */
+
+  function showToast(message) {
+    toastEl.textContent = message;
+    toastEl.classList.add('show');
+    if (toastTimer) clearTimeout(toastTimer);
+    toastTimer = setTimeout(function () {
+      toastEl.classList.remove('show');
+    }, 1800);
+  }
+
+  function renderCards() {
+    cardListEl.innerHTML = '';
+
+    if (items.length === 0) {
+      var empty = document.createElement('div');
+      empty.className = 'empty-state';
+      empty.textContent = '저장된 카드가 없습니다.\n"새 카드" 버튼을 눌러 추가해 보세요.';
+      empty.style.whiteSpace = 'pre-line';
+      cardListEl.appendChild(empty);
+      return;
+    }
+
+    items.forEach(function (item) {
+      var card = document.createElement('div');
+      card.className = 'card';
+
+      var preview = document.createElement('div');
+      preview.className = 'preview';
+      preview.textContent = item.text;
+
+      var deleteBtn = document.createElement('button');
+      deleteBtn.className = 'delete-btn';
+      deleteBtn.textContent = '✕';
+      deleteBtn.setAttribute('aria-label', '삭제');
+
+      // 카드 터치 → 출력 + 복사
+      card.addEventListener('click', function () {
+        outputText.textContent = item.text;
+        outputArea.classList.remove('hidden');
+        outputArea.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+        copyToClipboard(item.text).then(function (ok) {
+          showToast(ok ? '클립보드에 복사되었습니다' : '복사에 실패했습니다');
+        });
+      });
+
+      // 삭제 버튼 (이벤트 전파 중단)
+      deleteBtn.addEventListener('click', function (e) {
+        e.stopPropagation();
+        items = items.filter(function (it) { return it.id !== item.id; });
+        persistItems();
+        renderCards();
+        showToast('삭제되었습니다');
+      });
+
+      card.appendChild(preview);
+      card.appendChild(deleteBtn);
+      cardListEl.appendChild(card);
+    });
+  }
+
+  /* ---------- 모달 ---------- */
+
+  function openModal() {
+    modalOverlay.classList.remove('hidden');
+    document.body.classList.add('modal-open');
+    newTextEl.value = '';
+    saveBtn.disabled = true;
+    // 사용자 제스처 내에서 focus해야 iOS 키보드가 바로 열림
+    newTextEl.focus();
+  }
+
+  function closeModal() {
+    modalOverlay.classList.add('hidden');
+    document.body.classList.remove('modal-open');
+    newTextEl.blur();
+  }
+
+  /* ---------- 이벤트 ---------- */
+
+  newCardBtn.addEventListener('click', openModal);
+  cancelBtn.addEventListener('click', closeModal);
+
+  modalOverlay.addEventListener('click', function (e) {
+    if (e.target === modalOverlay) closeModal();
+  });
+
+  document.addEventListener('keydown', function (e) {
+    if (e.key === 'Escape' && !modalOverlay.classList.contains('hidden')) {
+      closeModal();
+    }
+  });
+
+  newTextEl.addEventListener('input', function () {
+    saveBtn.disabled = newTextEl.value.trim().length === 0;
+  });
+
+  saveBtn.addEventListener('click', function () {
+    var text = newTextEl.value.trim();
+    if (!text) return;
+
+    items.unshift({
+      id: Date.now().toString(36) + Math.random().toString(36).slice(2, 7),
+      text: text,
+      createdAt: Date.now()
+    });
+    persistItems();
+    renderCards();
+
+    closeModal();
+    showToast('저장되었습니다');
+  });
+
+  /* ---------- 초기화 ---------- */
+
+  renderCards();
+})();
+</script>
+</body>
+</html>

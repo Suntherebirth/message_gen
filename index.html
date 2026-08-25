@@ -23,7 +23,7 @@
   }
 
   body {
-    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Noto Sans KR", sans-serif;
+    font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro Text", "Apple SD Gothic Neo", "Noto Sans KR", sans-serif;
     background: #f2f2f7;
     color: #1c1c1e;
     min-height: 100%;
@@ -380,6 +380,45 @@
     font-weight: 600;
     color: #8e8e93;
     margin-bottom: 10px;
+  }
+
+  .variable-nav-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-bottom: 10px;
+  }
+
+  .variable-nav-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    min-height: 30px;
+    border-radius: 999px;
+    border: 1px solid #e1a426;
+    background: #fff4d6;
+    color: #9a6500;
+    padding: 6px 10px;
+    font-size: 13px;
+    font-weight: 700;
+    line-height: 1;
+  }
+
+  .variable-nav-chip.active {
+    border: 2px solid #ff3b30;
+    box-shadow: 0 0 0 3px rgba(255, 59, 48, 0.2);
+  }
+
+  .variable-nav-chip.completed {
+    border-color: #29a35a;
+    background: #e8f8ee;
+    color: #1f7a3f;
+  }
+
+  .variable-nav-check {
+    font-size: 12px;
+    font-weight: 800;
+    line-height: 1;
   }
 
   .variable-context {
@@ -771,10 +810,9 @@
     display: flex;
     width: 100%;
     align-items: stretch;
-    gap: 8px;
     background: #fff;
     border-radius: 14px;
-    padding: 16px 12px 16px 16px;
+    overflow: hidden;
     box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06);
     touch-action: pan-y;
   }
@@ -791,8 +829,10 @@
   .card .title {
     flex: 1;
     min-width: 0;
+    font-family: inherit;
     font-size: 16px;
     font-weight: 700;
+    line-height: 1.35;
     color: #1c1c1e;
     overflow: hidden;
     text-overflow: ellipsis;
@@ -800,17 +840,18 @@
   }
 
   .card .preview {
-    min-height: 5.6em;
-    margin-top: 6px;
+    margin: 16px 0 0;
+    padding: 0 18px 18px;
     font-size: 15px;
-    line-height: 1.4;
+    line-height: 1.6;
     color: #1c1c1e;
     overflow: hidden;
     display: -webkit-box;
-    -webkit-line-clamp: 4;
-    line-clamp: 4;
+    -webkit-line-clamp: 6;
+    line-clamp: 6;
     -webkit-box-orient: vertical;
     word-break: break-word;
+    white-space: pre-wrap;
   }
 
   .card .preview-tag,
@@ -828,6 +869,9 @@
     display: flex;
     align-items: center;
     gap: 8px;
+    padding: 12px 16px;
+    background: #8e8e93;
+    border-bottom: 1px solid #747479;
   }
 
   .card .card-tags {
@@ -844,12 +888,13 @@
     text-overflow: ellipsis;
     white-space: nowrap;
     border-radius: 999px;
+    border: none;
     background: #e5f0ff;
     color: #0066d6;
-    font-size: 12px;
-    font-weight: 600;
-    line-height: 1.25;
-    padding: 3px 8px;
+    font-size: 11px;
+    font-weight: 700;
+    line-height: 1.3;
+    padding: 3px 7px;
   }
 
   .card .preview-tag {
@@ -944,6 +989,20 @@
       background: #4a3200;
       border-color: #a56f00;
       color: #ffe1a3;
+    }
+    .variable-nav-chip {
+      border-color: #a56f00;
+      background: #4a3200;
+      color: #ffe1a3;
+    }
+    .variable-nav-chip.active {
+      border-color: #ff453a;
+      box-shadow: 0 0 0 3px rgba(255, 69, 58, 0.22);
+    }
+    .variable-nav-chip.completed {
+      border-color: #34c759;
+      background: #153726;
+      color: #88e5a8;
     }
     .header-icon-btn {
       background: #2c2c2e;
@@ -1082,6 +1141,7 @@
     <div class="modal" role="dialog" aria-modal="true" aria-labelledby="variableTitle">
       <h2 id="variableTitle">변수 입력</h2>
       <div id="variableStepIndicator" class="variable-step-indicator hidden"></div>
+      <div id="variableNavList" class="variable-nav-list"></div>
       <div id="variableFields"></div>
       <div class="modal-actions">
         <button id="cancelVariableBtn" class="modal-btn secondary">취소</button>
@@ -1165,6 +1225,7 @@
   var variableOverlay = document.getElementById('variableOverlay');
   var variableFieldsEl = document.getElementById('variableFields');
   var variableStepIndicatorEl = document.getElementById('variableStepIndicator');
+  var variableNavListEl = document.getElementById('variableNavList');
   var cancelVariableBtn = document.getElementById('cancelVariableBtn');
   var prevVariableBtn = document.getElementById('prevVariableBtn');
   var generateBtn = document.getElementById('generateBtn');
@@ -1955,9 +2016,118 @@
   function fillTemplate(text, values) {
     var result = text;
     Object.keys(values).forEach(function (name) {
-      result = replaceAllText(result, '[' + name + ']', '[' + values[name] + ']');
+      result = replaceAllText(result, '[' + name + ']', values[name]);
     });
     return result;
+  }
+
+  function parseTimeText(value) {
+    var match = /^\s*(\d{1,2}):(\d{2})\s*$/.exec(value || '');
+    var hour = 0;
+    var minute = 0;
+    if (!match) return null;
+    hour = parseInt(match[1], 10);
+    minute = parseInt(match[2], 10);
+    if (hour < 0 || hour > 23 || minute < 0 || minute > 59) return null;
+    return { hour: hour, minute: minute };
+  }
+
+  function formatTimeText(hour, minute) {
+    var normalizedHour = ((hour % 24) + 24) % 24;
+    var normalizedMinute = ((minute % 60) + 60) % 60;
+    var hourText = normalizedHour < 10 ? '0' + normalizedHour : '' + normalizedHour;
+    var minuteText = normalizedMinute < 10 ? '0' + normalizedMinute : '' + normalizedMinute;
+    return hourText + ':' + minuteText;
+  }
+
+  function subtractMinutesFromTime(timeValue, minutesToSubtract) {
+    var total = (timeValue.hour * 60) + timeValue.minute - minutesToSubtract;
+    var minutesPerDay = 24 * 60;
+    var normalized = ((total % minutesPerDay) + minutesPerDay) % minutesPerDay;
+    var hour = Math.floor(normalized / 60);
+    var minute = normalized % 60;
+    return formatTimeText(hour, minute);
+  }
+
+  function applyTimeAutoFillFromSecondInput(sourceInput) {
+    var sourceName = sourceInput && sourceInput.dataset ? sourceInput.dataset.variableName : '';
+    var sourceType = sourceInput && sourceInput.dataset ? sourceInput.dataset.variableType : '';
+    var typeInfo = getVariableType(sourceType);
+    var sourceTime = parseTimeText(sourceInput ? sourceInput.value : '');
+    var nameMatch = /^(.*?)(\d+)\s*$/.exec(sourceName || '');
+    var sourceIndex = 0;
+    var relatedInputs = variableFieldsEl.querySelectorAll('input[data-variable-name^="' + nameMatch[1] + '"]');
+    var relatedByNumber = {};
+    var hasThird = false;
+    var targetInput = null;
+
+    if (!typeInfo || typeInfo.baseName !== '시간' || !sourceTime || !nameMatch) return;
+    sourceIndex = parseInt(nameMatch[2], 10);
+
+    Array.prototype.forEach.call(relatedInputs, function (input) {
+      var inputMatch = /^(.*?)(\d+)\s*$/.exec(input.dataset.variableName || '');
+      if (!inputMatch || inputMatch[1] !== nameMatch[1]) return;
+      relatedByNumber[parseInt(inputMatch[2], 10)] = input;
+    });
+
+    hasThird = !!relatedByNumber[3];
+
+    if (sourceIndex === 3 && hasThird) {
+      targetInput = relatedByNumber[2];
+      if (targetInput && !targetInput.value.trim()) {
+        targetInput.value = subtractMinutesFromTime(sourceTime, 20);
+      }
+
+      targetInput = relatedByNumber[1];
+      if (targetInput && !targetInput.value.trim()) {
+        targetInput.value = subtractMinutesFromTime(sourceTime, 40);
+      }
+      return;
+    }
+
+    if (sourceIndex !== 2 || hasThird) return;
+
+    targetInput = variableFieldsEl.querySelector('input[data-variable-name="' + nameMatch[1] + '1"]');
+    if (!targetInput || targetInput.value.trim()) return;
+
+    targetInput.value = subtractMinutesFromTime(sourceTime, 30);
+  }
+
+  function applyAllTimeAutoFill() {
+    Array.prototype.forEach.call(variableFieldsEl.querySelectorAll('input'), function (input) {
+      applyTimeAutoFillFromSecondInput(input);
+    });
+  }
+
+  function renderVariableNavigation() {
+    variableNavListEl.innerHTML = '';
+
+    variableStepGroups.forEach(function (group, index) {
+      var input = group.querySelector('input');
+      var name = input ? input.dataset.variableName : ('변수 ' + (index + 1));
+      var isCompleted = !!(input && input.value.trim());
+
+      var chip = document.createElement('button');
+      chip.className = 'variable-nav-chip';
+      chip.type = 'button';
+      chip.textContent = name;
+      chip.classList.toggle('active', index === currentVariableStep);
+      chip.classList.toggle('completed', isCompleted);
+      chip.setAttribute('aria-pressed', index === currentVariableStep ? 'true' : 'false');
+      chip.setAttribute('aria-label', name + ' 입력으로 이동');
+      chip.addEventListener('click', function () {
+        goToVariableStep(index);
+      });
+
+      if (isCompleted) {
+        var check = document.createElement('span');
+        check.className = 'variable-nav-check';
+        check.textContent = '✓';
+        chip.appendChild(check);
+      }
+
+      variableNavListEl.appendChild(chip);
+    });
   }
 
   function showOutput(text) {
@@ -2180,6 +2350,7 @@
   function openVariableModal(item) {
     activeVariableItem = item;
     variableFieldsEl.innerHTML = '';
+    variableNavListEl.innerHTML = '';
     variableStepGroups = [];
     currentVariableStep = 0;
 
@@ -2204,6 +2375,11 @@
         if (e.key !== 'Enter') return;
         e.preventDefault();
         goToVariableStep(currentVariableStep + 1);
+      });
+
+      input.addEventListener('input', function () {
+        applyTimeAutoFillFromSecondInput(input);
+        renderVariableNavigation();
       });
 
       group.appendChild(context);
@@ -2263,6 +2439,8 @@
 
     prevVariableBtn.classList.toggle('hidden', index === 0);
     generateBtn.textContent = index === total - 1 ? '생성' : '다음';
+
+    renderVariableNavigation();
 
     var activeGroup = variableStepGroups[index];
     var activeInput = activeGroup && activeGroup.querySelector('input');
@@ -2522,6 +2700,8 @@
       goToVariableStep(currentVariableStep + 1);
       return;
     }
+
+    applyAllTimeAutoFill();
 
     var values = {};
     Array.prototype.forEach.call(variableFieldsEl.querySelectorAll('input'), function (input) {

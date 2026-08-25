@@ -158,6 +158,12 @@
     box-shadow: inset 0 0 0 1.5px #007aff;
   }
 
+  .tag-filter-all-chip {
+    text-align: center;
+    text-decoration: underline;
+    text-underline-offset: 3px;
+  }
+
   .tag-filter-empty {
     color: #8e8e93;
     font-size: 14px;
@@ -1604,6 +1610,17 @@
     return categories;
   }
 
+  function getKstWeekdayTag() {
+    var weekday = new Intl.DateTimeFormat('ko-KR', {
+      timeZone: 'Asia/Seoul',
+      weekday: 'long'
+    }).format(new Date());
+    for (var index = 0; index < SAVED_TAGS.length; index += 1) {
+      if (SAVED_TAGS[index].name === weekday) return SAVED_TAGS[index];
+    }
+    return null;
+  }
+
   function renderTagFilter() {
     var categories = getTagCategories();
     tagFilterCategoriesEl.innerHTML = '';
@@ -1643,6 +1660,20 @@
       tagFilterListEl.appendChild(empty);
       return;
     }
+
+    var allChip = document.createElement('button');
+    var isShowingAll = !activeTagFilter;
+    allChip.className = 'tag-filter-chip tag-filter-all-chip';
+    allChip.type = 'button';
+    allChip.textContent = '전체보기';
+    allChip.classList.toggle('selected', isShowingAll);
+    allChip.setAttribute('aria-pressed', isShowingAll ? 'true' : 'false');
+    allChip.addEventListener('click', function () {
+      activeTagFilter = null;
+      renderTagFilter();
+      renderCards();
+    });
+    tagFilterListEl.appendChild(allChip);
 
     SAVED_TAGS.filter(function (tag) {
       return tag.category === activeTagFilterCategory;
@@ -2716,6 +2747,8 @@
 
   renderVariablePrefixButtons();
   renderCardTagControls();
+  activeTagFilter = getKstWeekdayTag();
+  activeTagFilterCategory = activeTagFilter ? activeTagFilter.category : null;
   renderTagFilter();
   renderCards();
 })();

@@ -118,7 +118,7 @@
 
   main {
     display: grid;
-    grid-template-columns: minmax(180px, 240px) minmax(0, 680px);
+    grid-template-columns: minmax(180px, 240px) minmax(0, 1fr);
     gap: 20px;
     align-items: start;
     padding: 16px 20px;
@@ -128,17 +128,38 @@
     z-index: 1;
   }
 
-  .tag-filter-panel {
-    position: sticky;
-    top: 82px;
+  .left-panel-container,
+  .right-panel-container {
+    min-width: 0;
+    min-height: 0;
+    overscroll-behavior: contain;
+  }
+
+  .left-panel-container {
     grid-column: 1;
     grid-row: 1;
-    align-self: start;
-    min-width: 0;
+    position: sticky;
+    top: 82px;
     height: calc(100vh - 98px);
     max-height: calc(100vh - 98px);
     overflow-y: auto;
     -webkit-overflow-scrolling: touch;
+    touch-action: pan-y;
+  }
+
+  .right-panel-container {
+    grid-column: 2;
+    grid-row: 1;
+    height: calc(100vh - 98px);
+    max-height: calc(100vh - 98px);
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+    touch-action: pan-y;
+  }
+
+  .tag-filter-panel {
+    align-self: start;
+    min-width: 0;
     border-radius: 18px;
     background: var(--glass-bg);
     border: 1px solid var(--glass-border);
@@ -232,8 +253,6 @@
   }
 
   .content-panel {
-    grid-column: 2;
-    grid-row: 1;
     min-width: 0;
   }
 
@@ -244,11 +263,21 @@
       max-width: 680px;
     }
 
-    .tag-filter-panel {
-      position: static;
+    .left-panel-container,
+    .right-panel-container {
       height: auto;
       max-height: none;
+      overflow: visible;
+      touch-action: auto;
+    }
+
+    .left-panel-container {
+      position: static;
       margin-bottom: 16px;
+    }
+
+    .tag-filter-panel {
+      position: static;
     }
 
     .tag-filter-list {
@@ -453,8 +482,8 @@
     margin-top: 8px;
     border: 1px solid rgba(246, 251, 255, 0.36);
     border-radius: 10px;
-    background: rgba(105, 25, 55, 0.24);
-    border-color: rgba(255, 157, 183, 0.34);
+    background: var(--surface-soft);
+    border-color: var(--surface-border);
     color: inherit;
     padding: 10px 12px;
     font-size: 14px;
@@ -499,8 +528,8 @@
   }
 
   .variable-nav-chip.active {
-    border: 2px solid #bb607b;
-    box-shadow: 0 0 0 3px rgba(190, 48, 91, 0.2);
+    border: 2px solid #ff9db7;
+    box-shadow: 0 0 0 4px rgba(190, 48, 91, 0.34), 0 0 16px 4px rgba(190, 48, 91, 0.44);
   }
 
   .variable-nav-chip.completed {
@@ -519,11 +548,11 @@
     margin-bottom: 8px;
     padding: 10px 12px;
     border-radius: 10px;
-    border: 1px solid rgba(255, 157, 183, 0.36);
-    background: rgba(113, 29, 59, 0.3);
+    border: 1px solid var(--surface-border);
+    background: var(--surface-soft);
     font-size: 14px;
     line-height: 1.5;
-    color: #ffdce7;
+    color: var(--text-soft);
     word-break: break-word;
     white-space: pre-wrap;
   }
@@ -543,14 +572,25 @@
   }
 
   .variable-context-chip.active {
-    border: 2px solid #bb607b;
-    box-shadow: 0 0 0 3px rgba(190, 48, 91, 0.26), 0 0 10px rgba(96, 18, 45, 0.42);
+    border: 2px solid #ff9db7;
+    box-shadow: 0 0 0 4px rgba(190, 48, 91, 0.38), 0 0 18px 5px rgba(190, 48, 91, 0.56), 0 0 30px 8px rgba(96, 18, 45, 0.42);
     animation: variableChipGlow 1.2s ease-in-out infinite;
   }
 
+  .variable-input {
+    background: #000309;
+    color: var(--text-main);
+    border-color: rgba(130, 166, 214, 0.3);
+  }
+
+  .variable-input:focus {
+    border-color: var(--ruby-border);
+    box-shadow: 0 0 0 2px rgba(190, 48, 91, 0.2);
+  }
+
   @keyframes variableChipGlow {
-    0%, 100% { box-shadow: 0 0 0 3px rgba(190, 48, 91, 0.26), 0 0 10px rgba(96, 18, 45, 0.42); }
-    50% { box-shadow: 0 0 0 5px rgba(210, 91, 121, 0.18), 0 0 16px rgba(132, 22, 57, 0.5); }
+    0%, 100% { box-shadow: 0 0 0 4px rgba(190, 48, 91, 0.38), 0 0 18px 5px rgba(190, 48, 91, 0.56), 0 0 30px 8px rgba(96, 18, 45, 0.42); }
+    50% { box-shadow: 0 0 0 6px rgba(210, 91, 121, 0.34), 0 0 26px 8px rgba(210, 91, 121, 0.7), 0 0 42px 12px rgba(132, 22, 57, 0.5); }
   }
 
   .tag-suggestion-list {
@@ -823,13 +863,15 @@
 
   /* 출력 영역 */
   .output-area {
+    width: 100%;
+    max-width: 680px;
     background: rgba(7, 17, 33, 0.92);
     border-radius: 14px;
     display: flex;
     flex-direction: column;
     height: 156px;
     padding: 0;
-    margin-bottom: 16px;
+    margin: 0 auto 16px;
     box-shadow: var(--glass-shadow);
     border: 1px solid var(--glass-border);
     -webkit-backdrop-filter: blur(20px) saturate(116%);
@@ -1089,6 +1131,9 @@
   }
 
   #cardList {
+    width: 100%;
+    max-width: 680px;
+    margin-right: auto;
     display: grid;
     grid-template-columns: repeat(2, minmax(0, 1fr));
     align-items: start;
@@ -1355,23 +1400,28 @@
       border-color: rgba(180, 203, 236, 0.24);
       color: #f2f2f7;
     }
-    .variable-prefix-dropdown {
-      background: rgba(105, 25, 55, 0.3);
-      border-color: var(--ruby-border);
-    }
     .field-input::placeholder,
     textarea#newText::placeholder {
       color: rgba(215, 229, 248, 0.42);
     }
     .variable-context {
-      background: rgba(113, 29, 59, 0.3);
-      border-color: rgba(255, 157, 183, 0.36);
-      color: #ffdce7;
+      background: var(--surface-soft);
+      border-color: var(--surface-border);
+      color: var(--text-soft);
     }
     .variable-context-chip {
       background: var(--ruby-soft);
       border-color: var(--ruby-border);
       color: var(--ruby-text);
+    }
+    .variable-input {
+      background: #000309;
+      color: var(--text-main);
+      border-color: rgba(130, 166, 214, 0.3);
+    }
+    .variable-input:focus {
+      border-color: var(--ruby-border);
+      box-shadow: 0 0 0 2px rgba(190, 48, 91, 0.2);
     }
     .variable-nav-chip {
       border-color: var(--ruby-border);
@@ -1379,8 +1429,8 @@
       color: var(--ruby-text);
     }
     .variable-nav-chip.active {
-      border-color: #bb607b;
-      box-shadow: 0 0 0 3px rgba(190, 48, 91, 0.2);
+      border-color: #ff9db7;
+      box-shadow: 0 0 0 4px rgba(190, 48, 91, 0.34), 0 0 16px 4px rgba(190, 48, 91, 0.44);
     }
     .variable-nav-chip.completed {
       border-color: rgba(255, 147, 176, 0.5);
@@ -1506,22 +1556,26 @@
   </header>
 
   <main>
-    <aside class="tag-filter-panel" aria-label="태그 선택 영역">
-      <div class="tag-filter-header">
-        <div id="tagFilterCategories" class="tag-filter-categories" role="tablist" aria-label="태그 분류"></div>
-      </div>
-      <div id="tagFilterList" class="tag-filter-list"></div>
-      <button id="newCardBtn" class="new-card-btn">＋ 새 카드</button>
-    </aside>
+    <div class="left-panel-container">
+      <aside class="tag-filter-panel" aria-label="태그 선택 영역">
+        <div class="tag-filter-header">
+          <div id="tagFilterCategories" class="tag-filter-categories" role="tablist" aria-label="태그 분류"></div>
+        </div>
+        <div id="tagFilterList" class="tag-filter-list"></div>
+        <button id="newCardBtn" class="new-card-btn">＋ 새 카드</button>
+      </aside>
+    </div>
 
-    <section class="content-panel">
-      <div id="outputArea" class="output-area">
-        <button id="outputCopyBtn" class="output-copy-btn" type="button" disabled>다시 복사</button>
-        <div id="outputText" class="text"></div>
-      </div>
+    <div class="right-panel-container">
+      <section class="content-panel">
+        <div id="outputArea" class="output-area">
+          <button id="outputCopyBtn" class="output-copy-btn" type="button" disabled>다시 복사</button>
+          <div id="outputText" class="text"></div>
+        </div>
 
-      <div id="cardList"></div>
-    </section>
+        <div id="cardList"></div>
+      </section>
+    </div>
   </main>
 
   <div id="modalOverlay" class="modal-overlay hidden">
@@ -2622,10 +2676,12 @@
   function renderVariableContextHint(container, text, variableName) {
     var token = '[' + variableName + ']';
     var index = text.indexOf(token);
-    var before = '';
-    var after = '';
     var beforeStart = 0;
     var afterEnd = 0;
+    var contextText = '';
+    var pattern = /\[([^\[\]\n]+)\]/g;
+    var lastIndex = 0;
+    var match;
     var BEFORE_LENGTH = 80;
     var AFTER_LENGTH = 120;
 
@@ -2638,20 +2694,24 @@
 
     beforeStart = Math.max(0, index - BEFORE_LENGTH);
     afterEnd = Math.min(text.length, index + token.length + AFTER_LENGTH);
-    before = text.slice(beforeStart, index);
-    after = text.slice(index + token.length, afterEnd);
+    contextText = text.slice(beforeStart, afterEnd);
 
-    if (beforeStart > 0) before = '…' + before;
-    if (afterEnd < text.length) after += '…';
+    if (beforeStart > 0) contextText = '…' + contextText;
+    if (afterEnd < text.length) contextText += '…';
 
-    container.appendChild(document.createTextNode(before));
+    while ((match = pattern.exec(contextText)) !== null) {
+      container.appendChild(document.createTextNode(contextText.slice(lastIndex, match.index)));
 
-    var chip = document.createElement('span');
-    chip.className = 'variable-context-chip';
-    chip.textContent = token;
-    container.appendChild(chip);
+      var chip = document.createElement('span');
+      chip.className = 'variable-context-chip';
+      chip.classList.toggle('active', beforeStart + match.index - (beforeStart > 0 ? 1 : 0) === index);
+      chip.textContent = match[0];
+      container.appendChild(chip);
 
-    container.appendChild(document.createTextNode(after));
+      lastIndex = pattern.lastIndex;
+    }
+
+    container.appendChild(document.createTextNode(contextText.slice(lastIndex)));
   }
 
   function renderPreviewWithChips(preview, text) {
@@ -2665,7 +2725,7 @@
       var variableButton = document.createElement('button');
       variableButton.className = 'preview-variable';
       variableButton.type = 'button';
-      variableButton.textContent = match[0];
+      variableButton.textContent = match[1].trim();
       variableButton.setAttribute('aria-label', match[1].trim() + ' 변수');
       preview.appendChild(variableButton);
 

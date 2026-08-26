@@ -15,6 +15,7 @@
     --bg-top: #040b16;
     --bg-mid: #071326;
     --bg-bottom: #091a30;
+    --page-bg: #000;
     --glass-bg: rgba(10, 25, 49, 0.56);
     --glass-strong: rgba(10, 25, 49, 0.64);
     --glass-border: rgba(198, 221, 255, 0.22);
@@ -65,7 +66,7 @@
 
   body {
     font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro Text", "Apple SD Gothic Neo", "Noto Sans KR", sans-serif;
-    background: linear-gradient(165deg, var(--bg-top) 0%, var(--bg-mid) 48%, var(--bg-bottom) 100%);
+    background: var(--page-bg);
     color: var(--text-main);
     min-height: 100%;
     padding-top: env(safe-area-inset-top);
@@ -143,10 +144,13 @@
       "tags cards";
     gap: 4px;
     align-items: start;
-    padding: 16px 20px;
+    padding: 16px 20px 24px;
     width: 100%;
     max-width: none;
-    margin: 0;
+    margin: 8px 0 0;
+    background: var(--bg-mid);
+    border: 1px solid rgba(185, 209, 243, 0.12);
+    border-radius: 16px 16px 0 0;
     position: relative;
     z-index: 1;
     overflow: hidden;
@@ -162,8 +166,8 @@
     width: 100%;
     position: sticky;
     top: 82px;
-    height: 100%;
-    max-height: 100%;
+    height: calc(100% - 8px);
+    max-height: calc(100% - 8px);
     overflow-y: auto;
     overscroll-behavior: contain;
     border-right: 1px solid rgba(185, 209, 243, 0.12);
@@ -206,6 +210,9 @@
 
   .tag-filter-category,
   .tag-filter-chip {
+    position: relative;
+    overflow: hidden;
+    isolation: isolate;
     min-height: 36px;
     border-radius: 9px;
     padding: 8px 12px;
@@ -213,6 +220,19 @@
     font-weight: 700;
     line-height: 1.2;
     text-align: left;
+    transform: translateZ(0);
+    transition: background 0.18s ease, border-color 0.18s ease, box-shadow 0.18s ease, color 0.18s ease, transform 0.12s ease, filter 0.18s ease;
+  }
+
+  .tag-filter-category::before,
+  .tag-filter-chip::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(circle at 50% 50%, rgba(221, 247, 255, 0.42), transparent 58%);
+    opacity: 0;
+    transform: scale(0.64);
+    pointer-events: none;
   }
 
   .tag-filter-category {
@@ -232,6 +252,12 @@
     box-shadow: 0 0 8px 2px rgba(79, 190, 245, 0.62), 0 0 18px 5px rgba(30, 126, 211, 0.34);
   }
 
+  .tag-filter-category:active,
+  .tag-filter-chip:active {
+    transform: scale(0.97);
+    filter: brightness(1.12);
+  }
+
   .tag-filter-chip {
     background: rgba(14, 52, 91, 0.7);
     color: rgba(157, 214, 247, 0.62);
@@ -247,6 +273,47 @@
     color: #effaff;
     border-color: rgba(171, 231, 255, 0.82);
     box-shadow: 0 0 8px 2px rgba(79, 190, 245, 0.62), 0 0 18px 5px rgba(30, 126, 211, 0.34);
+  }
+
+  .tag-filter-category.filter-pulse,
+  .tag-filter-chip.filter-pulse {
+    animation: tagFilterPress 0.28s cubic-bezier(0.22, 1, 0.36, 1), tagFilterGlow 0.48s ease-out;
+  }
+
+  .tag-filter-category.filter-pulse::before,
+  .tag-filter-chip.filter-pulse::before {
+    animation: tagFilterRipple 0.48s ease-out;
+  }
+
+  @keyframes tagFilterPress {
+    0% { transform: scale(0.96); }
+    62% { transform: scale(1.025); }
+    100% { transform: scale(1); }
+  }
+
+  @keyframes tagFilterGlow {
+    0% { box-shadow: 0 0 0 0 rgba(98, 202, 255, 0); }
+    45% { box-shadow: 0 0 0 4px rgba(105, 205, 255, 0.28), 0 0 22px 6px rgba(30, 126, 211, 0.5); }
+    100% { box-shadow: inherit; }
+  }
+
+  @keyframes tagFilterRipple {
+    0% { opacity: 0.64; transform: scale(0.56); }
+    100% { opacity: 0; transform: scale(1.35); }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .tag-filter-category,
+    .tag-filter-chip {
+      transition: background 0.18s ease, border-color 0.18s ease, box-shadow 0.18s ease, color 0.18s ease;
+    }
+
+    .tag-filter-category.filter-pulse,
+    .tag-filter-chip.filter-pulse,
+    .tag-filter-category.filter-pulse::before,
+    .tag-filter-chip.filter-pulse::before {
+      animation: none;
+    }
   }
 
   .tag-filter-all-chip {
@@ -286,10 +353,10 @@
 
   .card-stack-wrapper {
     grid-area: cards;
-    align-self: stretch;
+    align-self: start;
     max-width: none;
     min-height: 0;
-    height: auto;
+    height: calc(100% - 8px);
     max-height: none;
     overflow-y: auto;
     overscroll-behavior: contain;
@@ -304,7 +371,7 @@
       display: flex;
       flex-direction: column;
       overflow: hidden;
-      padding: 16px;
+      padding: 16px 16px 24px;
       max-width: 680px;
     }
 
@@ -762,6 +829,30 @@
     border-radius: 10px;
     padding: 3px;
     margin: 14px 0;
+  }
+
+  .manage-category-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 8px;
+    margin: -6px 0 14px;
+  }
+
+  .manage-category-action {
+    min-height: 32px;
+    padding: 6px 10px;
+    border-radius: 8px;
+    background: var(--surface-strong);
+    color: var(--text-soft);
+    border: 1px solid var(--surface-border-strong);
+    font-size: 13px;
+    font-weight: 700;
+  }
+
+  .manage-category-action.remove {
+    background: var(--ruby-soft);
+    color: var(--ruby-text);
+    border-color: var(--ruby-border);
   }
 
   .manage-tab {
@@ -1516,6 +1607,7 @@
 
   /* 다크 테마 */
   :root {
+    --page-bg: #000;
     --surface-soft: rgba(42, 66, 101, 0.38);
     --surface-mid: rgba(49, 76, 115, 0.46);
     --surface-strong: rgba(62, 92, 136, 0.54);
@@ -1526,7 +1618,7 @@
     --text-soft: rgba(218, 231, 249, 0.76);
   }
     body {
-      background: linear-gradient(165deg, var(--bg-top) 0%, var(--bg-mid) 52%, var(--bg-bottom) 100%);
+      background: var(--page-bg);
       color: #e9f2ff;
     }
     header {
@@ -1958,6 +2050,7 @@
   var activeTagCategory = null;
   var activeTagFilterCategory = null;
   var activeTagFilter = null;
+  var pendingTagFilterPulseKey = null;
   var activeTagManageCategory = null;
   var activeVariableManageType = null;
   var SWIPE_ACTIONS_WIDTH = 148;
@@ -2738,8 +2831,22 @@
     return null;
   }
 
+  function getTagFilterPulseKey(tag) {
+    if (!tag) return 'all';
+    return 'tag:' + tag.category + ':' + tag.name;
+  }
+
+  function applyTagFilterPulse(button, pulseKey, currentPulseKey) {
+    if (pulseKey !== currentPulseKey) return;
+    button.classList.add('filter-pulse');
+    button.addEventListener('animationend', function () {
+      button.classList.remove('filter-pulse');
+    }, { once: true });
+  }
+
   function renderTagFilter() {
     var categories = getTagCategories();
+    var currentPulseKey = pendingTagFilterPulseKey;
     tagFilterCategoriesEl.innerHTML = '';
     tagFilterListEl.innerHTML = '';
 
@@ -2761,7 +2868,9 @@
       categoryBtn.textContent = category;
       categoryBtn.classList.toggle('active', isActive);
       categoryBtn.setAttribute('aria-selected', isActive ? 'true' : 'false');
+      applyTagFilterPulse(categoryBtn, 'category:' + category, currentPulseKey);
       categoryBtn.addEventListener('click', function () {
+        pendingTagFilterPulseKey = 'category:' + category;
         activeTagFilterCategory = category;
         activeTagFilter = null;
         renderTagFilter();
@@ -2785,7 +2894,9 @@
     allChip.textContent = '전체보기';
     allChip.classList.toggle('selected', isShowingAll);
     allChip.setAttribute('aria-pressed', isShowingAll ? 'true' : 'false');
+    applyTagFilterPulse(allChip, getTagFilterPulseKey(null), currentPulseKey);
     allChip.addEventListener('click', function () {
+      pendingTagFilterPulseKey = getTagFilterPulseKey(null);
       activeTagFilter = null;
       renderTagFilter();
       renderCards();
@@ -2802,13 +2913,16 @@
       chip.textContent = formatTag(tag);
       chip.classList.toggle('selected', isSelected);
       chip.setAttribute('aria-pressed', isSelected ? 'true' : 'false');
+      applyTagFilterPulse(chip, getTagFilterPulseKey(tag), currentPulseKey);
       chip.addEventListener('click', function () {
         activeTagFilter = isSelected ? null : tag;
+        pendingTagFilterPulseKey = getTagFilterPulseKey(activeTagFilter);
         renderTagFilter();
         renderCards();
       });
       tagFilterListEl.appendChild(chip);
     });
+    pendingTagFilterPulseKey = null;
   }
 
   function renderCardTagControls() {
@@ -2913,6 +3027,75 @@
       });
       tagCategoryTabsEl.appendChild(tab);
     });
+
+    var categoryActions = document.createElement('div');
+    categoryActions.className = 'manage-category-actions';
+
+    var renameCategoryBtn = document.createElement('button');
+    renameCategoryBtn.className = 'manage-category-action';
+    renameCategoryBtn.type = 'button';
+    renameCategoryBtn.textContent = '이름 변경';
+    renameCategoryBtn.addEventListener('click', function () {
+      var nextCategory = window.prompt('새 분류 이름을 입력해 주세요.', activeTagManageCategory);
+      if (nextCategory === null) return;
+      nextCategory = nextCategory.trim();
+      if (!nextCategory || nextCategory === activeTagManageCategory) return;
+      if (categories.indexOf(nextCategory) !== -1) {
+        showToast('이미 등록된 분류입니다');
+        return;
+      }
+
+      SAVED_TAGS.forEach(function (tag) {
+        if (tag.category === activeTagManageCategory) tag.category = nextCategory;
+      });
+      setCardTags(parseTags(newTagsEl.value).map(function (tag) {
+        return tag.category === activeTagManageCategory
+          ? { category: nextCategory, name: tag.name }
+          : tag;
+      }));
+      if (activeTagCategory === activeTagManageCategory) activeTagCategory = nextCategory;
+      if (activeTagFilterCategory === activeTagManageCategory) activeTagFilterCategory = nextCategory;
+      if (activeTagFilter && activeTagFilter.category === activeTagManageCategory) {
+        activeTagFilter = { category: nextCategory, name: activeTagFilter.name };
+      }
+      activeTagManageCategory = nextCategory;
+      persistSavedTags();
+      renderCardTagControls();
+      renderTagFilter();
+      renderTagCategorySelect();
+      renderTagManageList();
+      renderCards();
+      showToast('분류 이름을 변경했습니다');
+    });
+    categoryActions.appendChild(renameCategoryBtn);
+
+    var removeCategoryBtn = document.createElement('button');
+    removeCategoryBtn.className = 'manage-category-action remove';
+    removeCategoryBtn.type = 'button';
+    removeCategoryBtn.textContent = '분류 삭제';
+    removeCategoryBtn.addEventListener('click', function () {
+      if (!window.confirm('"' + activeTagManageCategory + '" 분류와 모든 태그를 삭제하시겠습니까?')) return;
+
+      SAVED_TAGS = SAVED_TAGS.filter(function (tag) {
+        return tag.category !== activeTagManageCategory;
+      });
+      setCardTags(parseTags(newTagsEl.value).filter(function (tag) {
+        return tag.category !== activeTagManageCategory;
+      }));
+      if (activeTagCategory === activeTagManageCategory) activeTagCategory = null;
+      if (activeTagFilterCategory === activeTagManageCategory) activeTagFilterCategory = null;
+      if (activeTagFilter && activeTagFilter.category === activeTagManageCategory) activeTagFilter = null;
+      activeTagManageCategory = null;
+      persistSavedTags();
+      renderCardTagControls();
+      renderTagFilter();
+      renderTagCategorySelect();
+      renderTagManageList();
+      renderCards();
+      showToast('분류를 삭제했습니다');
+    });
+    categoryActions.appendChild(removeCategoryBtn);
+    tagManageListEl.appendChild(categoryActions);
 
     var categoryTags = SAVED_TAGS.filter(function (tag) {
       return tag.category === activeTagManageCategory;
@@ -3862,6 +4045,10 @@
   newTitleEl.addEventListener('input', updateSaveState);
   newTextEl.addEventListener('input', updateSaveState);
   scheduledMessageEl.addEventListener('input', updateSaveState);
+
+  appTitleEl.addEventListener('click', function () {
+    window.location.reload();
+  });
 
   addVariablePrefixBtn.addEventListener('click', function () {
     var creatingNewType = variableTypeSelectEl.value === NEW_VARIABLE_TYPE_VALUE;

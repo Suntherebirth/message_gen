@@ -142,15 +142,12 @@
     grid-template-areas:
       "tags output"
       "tags cards";
-    gap: 4px;
+    gap: 8px;
     align-items: start;
-    padding: 16px 20px 24px;
+    padding: 8px;
     width: 100%;
     max-width: none;
-    margin: 8px 0 0;
-    background: var(--bg-mid);
-    border: 1px solid rgba(185, 209, 243, 0.12);
-    border-radius: 16px 16px 0 0;
+    margin: 0;
     position: relative;
     z-index: 1;
     overflow: hidden;
@@ -164,14 +161,17 @@
   .left-panel-container {
     grid-area: tags;
     width: 100%;
+    align-self: stretch;
     position: sticky;
     top: 82px;
-    height: calc(100% - 8px);
-    max-height: calc(100% - 8px);
+    height: 100%;
+    max-height: 100%;
     overflow-y: auto;
     overscroll-behavior: contain;
-    border-right: 1px solid rgba(185, 209, 243, 0.12);
-    padding-right: 10px;
+    background: var(--bg-mid);
+    border: 1px solid rgba(185, 209, 243, 0.12);
+    border-radius: 16px;
+    padding: 10px;
     -webkit-overflow-scrolling: touch;
     touch-action: pan-y;
   }
@@ -344,24 +344,26 @@
   .output-area-wrapper {
     grid-area: output;
     min-height: 0;
-    max-width: 704px;
-    margin: 0 auto;
-    padding: 0 12px;
-    margin-bottom: 12px;
+    padding: 12px;
+    background: var(--bg-mid);
+    border: 1px solid rgba(185, 209, 243, 0.12);
+    border-radius: 16px;
     position: relative;
   }
 
   .card-stack-wrapper {
     grid-area: cards;
-    align-self: start;
+    align-self: stretch;
     max-width: none;
     min-height: 0;
-    height: calc(100% - 8px);
+    height: 100%;
     max-height: none;
     overflow-y: auto;
     overscroll-behavior: contain;
-    border-top: 1px solid rgba(185, 209, 243, 0.14);
-    padding-top: 14px;
+    background: var(--bg-mid);
+    border: 1px solid rgba(185, 209, 243, 0.12);
+    border-radius: 16px;
+    padding: 12px;
     -webkit-overflow-scrolling: touch;
     touch-action: pan-y;
   }
@@ -371,7 +373,8 @@
       display: flex;
       flex-direction: column;
       overflow: hidden;
-      padding: 16px 16px 24px;
+      gap: 8px;
+      padding: 8px;
       max-width: 680px;
     }
 
@@ -389,9 +392,6 @@
       position: static;
       width: 100%;
       max-width: none;
-      margin-bottom: 16px;
-      border-right: 0;
-      padding-right: 0;
     }
 
     .tag-filter-panel {
@@ -490,7 +490,6 @@
 
   .modal::before,
   .card::before,
-  .output-area::before,
   .tag-filter-panel::before {
     content: '';
     position: absolute;
@@ -1042,18 +1041,31 @@
   /* 출력 영역 */
   .output-area {
     width: 100%;
-    max-width: 680px;
-    background: rgba(7, 17, 33, 0.92);
-    border-radius: 14px;
+    max-width: calc(100% - 188px);
+    background:
+      repeating-linear-gradient(180deg, rgba(255, 255, 255, 0.025) 0px, rgba(255, 255, 255, 0.025) 1px, transparent 1px, transparent 3px),
+      linear-gradient(180deg, #060a13, #010308);
+    border-radius: 16px;
     display: flex;
     flex-direction: column;
     height: 180px;
-    padding: 0;
+    padding: 20px 16px 16px;
     margin: 0 auto;
     box-shadow: var(--glass-shadow);
-    border: 1px solid var(--glass-border);
-    -webkit-backdrop-filter: blur(20px) saturate(116%);
-    backdrop-filter: blur(20px) saturate(116%);
+    border: 1px solid rgba(120, 190, 255, 0.16);
+  }
+
+  .output-area::after {
+    content: 'OUTPUT';
+    position: absolute;
+    top: 8px;
+    left: 16px;
+    font-family: "SF Mono", "Cascadia Code", "Roboto Mono", monospace;
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 3px;
+    color: rgba(140, 200, 255, 0.4);
+    pointer-events: none;
   }
 
   .output-area .empty-output {
@@ -1062,23 +1074,18 @@
 
   .output-copy-btn {
     position: absolute;
-    left: calc(100% + 12px);
-    bottom: 0;
-    z-index: 1;
+    right: 12px;
+    bottom: 12px;
+    z-index: 2;
     flex: 0 0 auto;
-    padding: 6px 10px;
-    border-radius: 8px;
+    padding: 8px 12px;
+    border-radius: 9px;
     background: rgba(56, 91, 139, 0.58);
     border: 1px solid rgba(190, 219, 255, 0.28);
     color: #e8f3ff;
-    font-size: 12px;
+    font-size: 13px;
     font-weight: 700;
     white-space: nowrap;
-  }
-
-  .output-copy-btn:disabled {
-    opacity: 0.42;
-    cursor: default;
   }
 
   .output-copy-btn:not(:disabled):active {
@@ -1086,13 +1093,15 @@
     transform: scale(0.97);
   }
 
+  .output-copy-btn:disabled {
+    opacity: 0.42;
+    cursor: default;
+  }
+
   .output-area .text {
     flex: 1;
-    margin: 12px;
-    padding: 10px 12px;
-    border: 1px solid rgba(130, 166, 214, 0.2);
-    border-radius: 9px;
-    background: #000309;
+    margin-top: 8px;
+    padding: 0;
     color: #e7f2ff;
     font-size: 16px;
     font-family: "SF Mono", "Cascadia Code", "Roboto Mono", monospace;
@@ -1108,6 +1117,10 @@
   }
 
   @media (max-width: 760px) {
+    .output-area {
+      max-width: 100%;
+    }
+
     .output-copy-btn {
       position: static;
       align-self: flex-end;
@@ -1330,7 +1343,7 @@
     grid-template-columns: repeat(2, minmax(0, 1fr));
     align-items: start;
     gap: 10px;
-    padding: 0 clamp(24px, 5vw, 44px) 12px;
+    padding: 6px clamp(16px, 3vw, 32px) 16px;
   }
 
   .card-divider {

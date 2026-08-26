@@ -50,6 +50,7 @@
 
   html {
     height: 100%;
+    height: -webkit-fill-available;
     -webkit-text-size-adjust: 100%;
   }
 
@@ -63,6 +64,9 @@
     padding-left: env(safe-area-inset-left);
     padding-right: env(safe-area-inset-right);
     height: 100vh;
+    height: 100dvh;
+    height: 100svh;
+    min-height: -webkit-fill-available;
     display: flex;
     flex-direction: column;
     overflow: hidden;
@@ -96,10 +100,35 @@
     -webkit-user-select: none;
     color: #f5f9ff;
     text-shadow: 0 1px 2px rgba(6, 12, 22, 0.36);
+    transform-origin: left center;
+    transition: opacity 0.16s ease, transform 0.16s ease, text-shadow 0.16s ease;
   }
 
   header h1:active {
     opacity: 0.65;
+    transform: scale(0.96);
+  }
+
+  header h1.title-press {
+    animation: titlePress 0.22s cubic-bezier(0.22, 1, 0.36, 1);
+  }
+
+  @keyframes titlePress {
+    0% {
+      opacity: 0.65;
+      transform: scale(0.96);
+      text-shadow: 0 0 0 rgba(153, 221, 255, 0);
+    }
+    55% {
+      opacity: 1;
+      transform: scale(1.025);
+      text-shadow: 0 0 12px rgba(153, 221, 255, 0.6);
+    }
+    100% {
+      opacity: 1;
+      transform: scale(1);
+      text-shadow: 0 1px 2px rgba(6, 12, 22, 0.36);
+    }
   }
 
   .header-icon-btn {
@@ -306,6 +335,14 @@
   }
 
   @media (prefers-reduced-motion: reduce) {
+    header h1 {
+      transition: none;
+    }
+
+    header h1.title-press {
+      animation: none;
+    }
+
     .tag-filter-category,
     .tag-filter-chip {
       transition: background 0.18s ease, border-color 0.18s ease, box-shadow 0.18s ease, color 0.18s ease;
@@ -449,6 +486,7 @@
   /* 모달 */
   body.modal-open {
     overflow: hidden;
+    width: 100%;
   }
 
   .modal-overlay {
@@ -476,14 +514,24 @@
     width: 100%;
     max-width: 520px;
     max-height: 100%;
-    overflow-y: auto;
-    -webkit-overflow-scrolling: touch;
-    padding: 18px 16px 16px;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    padding: 0;
     border: 1px solid var(--glass-border);
     box-shadow: 0 20px 40px rgba(11, 18, 30, 0.3);
     -webkit-backdrop-filter: blur(20px) saturate(114%);
     backdrop-filter: blur(20px) saturate(114%);
     animation: modalIn 0.2s ease-out;
+  }
+
+  .modal-body {
+    flex: 1;
+    min-height: 0;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+    overscroll-behavior: contain;
+    padding: 18px 16px 2px;
   }
 
   .modal::before,
@@ -627,6 +675,18 @@
 
   .variable-field-group:last-child {
     margin-bottom: 0;
+  }
+
+  .variable-field-group.hidden {
+    display: block !important;
+    position: absolute !important;
+    top: -9999px !important;
+    left: -9999px !important;
+    opacity: 0 !important;
+    pointer-events: none !important;
+    height: 0 !important;
+    overflow: hidden !important;
+    visibility: hidden !important;
   }
 
   .variable-step-indicator {
@@ -1005,7 +1065,10 @@
     display: flex;
     justify-content: flex-end;
     gap: 8px;
+    flex-shrink: 0;
     margin-top: 14px;
+    padding: 0 16px 16px;
+    background: var(--glass-strong);
   }
 
   .modal-btn {
@@ -1207,6 +1270,7 @@
     min-height: 0;
     overflow-y: auto;
     -webkit-overflow-scrolling: touch;
+    overscroll-behavior: contain;
   }
 
   .mobile-tag-drawer-body .left-panel-container {
@@ -1222,6 +1286,17 @@
 
   .mobile-tag-drawer-body .tag-filter-panel {
     min-height: 0;
+  }
+
+  .mobile-tag-drawer-body .tag-filter-list {
+    flex-direction: column;
+    overflow-x: visible;
+    padding-bottom: 0;
+    touch-action: pan-y;
+  }
+
+  .mobile-tag-drawer-body .tag-filter-chip {
+    flex: 0 0 auto;
   }
 
   @keyframes drawerIn {
@@ -1265,6 +1340,7 @@
     padding: 14px;
     overflow-y: auto;
     -webkit-overflow-scrolling: touch;
+    overscroll-behavior: contain;
   }
 
   .settings-menu-list {
@@ -1429,6 +1505,15 @@
   @media (max-width: 760px) {
     #cardList {
       grid-template-columns: minmax(0, 1fr);
+    }
+
+    .card .preview {
+      margin-bottom: 0;
+      padding-bottom: 0;
+    }
+
+    .card .content.preview-truncated {
+      padding-bottom: 18px;
     }
   }
 

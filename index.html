@@ -45,21 +45,23 @@
 
   <div id="modalOverlay" class="modal-overlay hidden">
     <div class="modal" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
-      <h2 id="modalTitle">새 카드</h2>
-      <label class="field-label" for="newTitle">제목</label>
-      <input id="newTitle" class="field-input" type="text" placeholder="카드 제목">
-      <div class="field-heading">
-        <label class="field-label" for="newText">내용</label>
+      <div class="modal-body">
+        <h2 id="modalTitle">새 카드</h2>
+        <label class="field-label" for="newTitle">제목</label>
+        <input id="newTitle" class="field-input" type="text" placeholder="카드 제목">
+        <div class="field-heading">
+          <label class="field-label" for="newText">내용</label>
+        </div>
+        <div id="variablePrefixList" class="variable-prefix-list"></div>
+        <textarea id="newText" placeholder="저장할 텍스트를 입력하세요..."></textarea>
+        <label class="field-label">태그</label>
+        <input id="newTags" type="hidden">
+        <div id="selectedTagList" class="selected-tag-list"></div>
+        <div id="tagCategoryList" class="tag-category-list"></div>
+        <div id="tagOptionList" class="tag-option-list"></div>
+        <label class="field-label" for="scheduledMessage">예약</label>
+        <input id="scheduledMessage" class="field-input schedule-input" type="text" placeholder="예: 토요일 11:50">
       </div>
-      <div id="variablePrefixList" class="variable-prefix-list"></div>
-      <textarea id="newText" placeholder="저장할 텍스트를 입력하세요..."></textarea>
-      <label class="field-label">태그</label>
-      <input id="newTags" type="hidden">
-      <div id="selectedTagList" class="selected-tag-list"></div>
-      <div id="tagCategoryList" class="tag-category-list"></div>
-      <div id="tagOptionList" class="tag-option-list"></div>
-      <label class="field-label" for="scheduledMessage">예약</label>
-      <input id="scheduledMessage" class="field-input schedule-input" type="text" placeholder="예: 토요일 11:50">
       <div class="modal-actions">
         <button id="cancelBtn" class="modal-btn secondary">취소</button>
         <button id="saveBtn" class="modal-btn primary" disabled>저장</button>
@@ -69,10 +71,12 @@
 
   <div id="variableOverlay" class="modal-overlay hidden">
     <div class="modal" role="dialog" aria-modal="true" aria-labelledby="variableTitle">
-      <h2 id="variableTitle">변수 입력</h2>
-      <div id="variableStepIndicator" class="variable-step-indicator hidden"></div>
-      <div id="variableNavList" class="variable-nav-list"></div>
-      <div id="variableFields"></div>
+      <div class="modal-body">
+        <h2 id="variableTitle">변수 입력</h2>
+        <div id="variableStepIndicator" class="variable-step-indicator hidden"></div>
+        <div id="variableNavList" class="variable-nav-list"></div>
+        <div id="variableFields"></div>
+      </div>
       <div class="modal-actions">
         <button id="cancelVariableBtn" class="modal-btn secondary">취소</button>
         <button id="prevVariableBtn" class="modal-btn secondary hidden">이전</button>
@@ -83,22 +87,24 @@
 
   <div id="variableManageOverlay" class="modal-overlay hidden">
     <div class="modal" role="dialog" aria-modal="true" aria-labelledby="variableManageTitle">
-      <h2 id="variableManageTitle">변수 관리</h2>
-      <div class="manage-section">
-        <label class="manage-section-title" for="variableTypeSelect">종류</label>
-        <select id="variableTypeSelect" class="field-input" aria-label="변수 종류 선택"></select>
-        <div id="variableTypeNewGroup" class="variable-type-new-group hidden">
-          <input id="variableTypeNewInput" class="field-input" type="text" placeholder="예: 시간">
-          <span class="variable-type-new-suffix">변수</span>
+      <div class="modal-body">
+        <h2 id="variableManageTitle">변수 관리</h2>
+        <div class="manage-section">
+          <label class="manage-section-title" for="variableTypeSelect">종류</label>
+          <select id="variableTypeSelect" class="field-input" aria-label="변수 종류 선택"></select>
+          <div id="variableTypeNewGroup" class="variable-type-new-group hidden">
+            <input id="variableTypeNewInput" class="field-input" type="text" placeholder="예: 시간">
+            <span class="variable-type-new-suffix">변수</span>
+          </div>
+          <label class="field-label" for="variablePrefixLabel">프리픽스</label>
+          <input id="variablePrefixLabel" class="field-input" type="text" placeholder="예: 오타니">
+          <div class="modal-actions">
+            <button id="addVariablePrefixBtn" class="modal-btn primary">추가</button>
+          </div>
         </div>
-        <label class="field-label" for="variablePrefixLabel">프리픽스</label>
-        <input id="variablePrefixLabel" class="field-input" type="text" placeholder="예: 오타니">
-        <div class="modal-actions">
-          <button id="addVariablePrefixBtn" class="modal-btn primary">추가</button>
-        </div>
+        <div id="variableTypeTabs" class="manage-tabs" role="tablist" aria-label="변수 종류"></div>
+        <div id="variableManageList" class="manage-panel scrollable"></div>
       </div>
-      <div id="variableTypeTabs" class="manage-tabs" role="tablist" aria-label="변수 종류"></div>
-      <div id="variableManageList" class="manage-panel scrollable"></div>
       <div class="modal-actions">
         <button id="closeVariableManageBtn" class="modal-btn secondary">닫기</button>
       </div>
@@ -107,19 +113,21 @@
 
   <div id="tagManageOverlay" class="modal-overlay hidden">
     <div class="modal" role="dialog" aria-modal="true" aria-labelledby="tagManageTitle">
-      <h2 id="tagManageTitle">태그 관리</h2>
-      <div class="manage-section">
-        <label class="manage-section-title" for="tagCategorySelect">분류</label>
-        <select id="tagCategorySelect" class="field-input" aria-label="태그 분류 선택"></select>
-        <input id="tagCategoryNewInput" class="field-input hidden" type="text" placeholder="새 분류 이름">
-        <label class="field-label" for="tagLabel">태그</label>
-        <input id="tagLabel" class="field-input" type="text" placeholder="예: 월요일">
-        <div class="modal-actions">
-          <button id="addTagBtn" class="modal-btn primary">태그 추가</button>
+      <div class="modal-body">
+        <h2 id="tagManageTitle">태그 관리</h2>
+        <div class="manage-section">
+          <label class="manage-section-title" for="tagCategorySelect">분류</label>
+          <select id="tagCategorySelect" class="field-input" aria-label="태그 분류 선택"></select>
+          <input id="tagCategoryNewInput" class="field-input hidden" type="text" placeholder="새 분류 이름">
+          <label class="field-label" for="tagLabel">태그</label>
+          <input id="tagLabel" class="field-input" type="text" placeholder="예: 월요일">
+          <div class="modal-actions">
+            <button id="addTagBtn" class="modal-btn primary">태그 추가</button>
+          </div>
         </div>
+        <div id="tagCategoryTabs" class="manage-tabs" role="tablist" aria-label="태그 분류"></div>
+        <div id="tagManageList" class="manage-panel scrollable"></div>
       </div>
-      <div id="tagCategoryTabs" class="manage-tabs" role="tablist" aria-label="태그 분류"></div>
-      <div id="tagManageList" class="manage-panel scrollable"></div>
       <div class="modal-actions">
         <button id="closeTagManageBtn" class="modal-btn secondary">닫기</button>
       </div>
@@ -291,6 +299,11 @@
           return { element: element, top: element.scrollTop };
         })
       };
+      // iOS Safari에서는 body에 overflow:hidden만으로 배경 스크롤이 막히지 않으므로 body를 화면에 고정해 배경 스크롤을 차단한다.
+      document.body.style.position = 'fixed';
+      document.body.style.top = -modalScrollState.windowY + 'px';
+      document.body.style.left = '0';
+      document.body.style.right = '0';
     }
     document.body.classList.add('modal-open');
   }
@@ -308,6 +321,10 @@
       document.activeElement.blur();
     }
     document.body.classList.remove('modal-open');
+    document.body.style.position = '';
+    document.body.style.top = '';
+    document.body.style.left = '';
+    document.body.style.right = '';
 
     function restore() {
       if (modalScrollState !== null) return;
@@ -1506,8 +1523,10 @@
       container.appendChild(document.createTextNode(contextText.slice(lastIndex, match.index)));
 
       var chip = document.createElement('span');
+      var isTargetChip = beforeStart + match.index - (beforeStart > 0 ? 1 : 0) === index;
       chip.className = 'variable-context-chip';
-      chip.classList.toggle('active', beforeStart + match.index - (beforeStart > 0 ? 1 : 0) === index);
+      chip.dataset.contextTarget = isTargetChip ? 'true' : 'false';
+      chip.classList.toggle('active', isTargetChip);
       chip.textContent = match[0];
       container.appendChild(chip);
 
@@ -1699,6 +1718,13 @@
       result = replaceAllText(result, '[' + name + ']', values[name]);
     });
     return result;
+  }
+
+  function formatAmountValue(rawValue) {
+    var isNegative = /^\s*-/.test(rawValue || '');
+    var digits = (rawValue || '').replace(/[^\d]/g, '');
+    if (!digits) return rawValue;
+    return (isNegative ? '-' : '') + Number(digits).toLocaleString('ko-KR') + '원';
   }
 
   function parseTimeText(value) {
@@ -2000,6 +2026,7 @@
       wrapper.appendChild(card);
       attachSwipeHandlers(wrapper, card);
       cardListEl.appendChild(wrapper);
+      content.classList.toggle('preview-truncated', preview.scrollHeight > preview.clientHeight + 1);
       if (tags && tags.offsetTop > title.offsetTop) {
         titleRow.classList.add('tags-on-next-row');
       }
@@ -2181,12 +2208,19 @@
     var total = variableStepGroups.length;
     if (index < 0) index = 0;
     if (index >= total) index = total - 1;
+
+    if (document.activeElement && typeof document.activeElement.blur === 'function') {
+      document.activeElement.blur();
+    }
+
     currentVariableStep = index;
 
     variableStepGroups.forEach(function (group, i) {
       group.classList.toggle('hidden', i !== index);
-      var chip = group.querySelector('.variable-context-chip');
-      if (chip) chip.classList.toggle('active', i === index);
+      Array.prototype.forEach.call(group.querySelectorAll('.variable-context-chip'), function (chip) {
+        var isTargetChip = chip.dataset.contextTarget === 'true';
+        chip.classList.toggle('active', i === index && isTargetChip);
+      });
     });
 
     variableStepIndicatorEl.classList.toggle('hidden', total <= 1);
@@ -2196,13 +2230,12 @@
     generateBtn.textContent = index === total - 1 ? '생성' : '다음';
 
     renderVariableNavigation();
-
-    var activeGroup = variableStepGroups[index];
-    var activeInput = activeGroup && activeGroup.querySelector('input');
-    if (activeInput) activeInput.focus();
   }
 
   function closeVariableModal() {
+    if (document.activeElement && typeof document.activeElement.blur === 'function') {
+      document.activeElement.blur();
+    }
     variableOverlay.classList.add('hidden');
     endModalSession();
     activeVariableItem = null;
@@ -2285,55 +2318,6 @@
   });
   variableTypeSelectEl.addEventListener('change', updateVariableTypeNewInputVisibility);
 
-  modalOverlay.addEventListener('click', function (e) {
-    if (e.target === modalOverlay) closeModal();
-  });
-
-  variableOverlay.addEventListener('click', function (e) {
-    if (e.target === variableOverlay) closeVariableModal();
-  });
-
-  variableManageOverlay.addEventListener('click', function (e) {
-    if (e.target === variableManageOverlay) closeVariableManageModal();
-  });
-
-  tagManageOverlay.addEventListener('click', function (e) {
-    if (e.target === tagManageOverlay) closeTagManageModal();
-  });
-
-  settingsDrawerOverlay.addEventListener('click', function (e) {
-    if (e.target === settingsDrawerOverlay) closeSettingsDrawer();
-  });
-
-  mobileTagDrawerOverlay.addEventListener('click', function (e) {
-    if (e.target === mobileTagDrawerOverlay) closeMobileTagDrawer();
-  });
-
-  document.addEventListener('keydown', function (e) {
-    if (e.key === 'Escape' && !modalOverlay.classList.contains('hidden')) {
-      closeModal();
-    }
-    if (e.key === 'Escape' && !variableOverlay.classList.contains('hidden')) {
-      closeVariableModal();
-    }
-    if (e.key === 'Escape' && !variableManageOverlay.classList.contains('hidden')) {
-      closeVariableManageModal();
-    }
-    if (e.key === 'Escape' && !tagManageOverlay.classList.contains('hidden')) {
-      closeTagManageModal();
-    }
-    if (e.key === 'Escape' && !settingsDrawerOverlay.classList.contains('hidden')) {
-      if (!customSortSection.classList.contains('hidden')) {
-        showMainSettingsMenu();
-        return;
-      }
-      closeSettingsDrawer();
-    }
-    if (e.key === 'Escape' && !mobileTagDrawerOverlay.classList.contains('hidden')) {
-      closeMobileTagDrawer();
-    }
-  });
-
   function updateSaveState() {
     saveBtn.disabled = newTitleEl.value.trim().length === 0 || newTextEl.value.trim().length === 0;
   }
@@ -2343,7 +2327,14 @@
   scheduledMessageEl.addEventListener('input', updateSaveState);
 
   appTitleEl.addEventListener('click', function () {
-    window.location.reload();
+    appTitleEl.classList.remove('title-press');
+    void appTitleEl.offsetWidth;
+    appTitleEl.classList.add('title-press');
+
+    var reloadDelay = window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 0 : 220;
+    window.setTimeout(function () {
+      window.location.reload();
+    }, reloadDelay);
   });
 
   addVariablePrefixBtn.addEventListener('click', function () {
@@ -2510,7 +2501,10 @@
 
     var values = {};
     Array.prototype.forEach.call(variableFieldsEl.querySelectorAll('input'), function (input) {
-      values[input.dataset.variableName] = input.value.trim();
+      var value = input.value.trim();
+      var type = getVariableType(input.dataset.variableType);
+      if (type && type.baseName === '금액' && value) value = formatAmountValue(value);
+      values[input.dataset.variableName] = value;
     });
 
     showOutput(fillTemplate(activeVariableItem.text, values));

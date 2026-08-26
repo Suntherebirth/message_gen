@@ -134,7 +134,8 @@
   }
 
   main {
-    flex: 1 1 auto;
+    flex: 1 1 0;
+    height: 0;
     min-height: 0;
     display: grid;
     grid-template-columns: 240px minmax(0, 1fr);
@@ -164,8 +165,6 @@
     align-self: stretch;
     position: sticky;
     top: 82px;
-    height: auto;
-    max-height: none;
     overflow-y: auto;
     overscroll-behavior: contain;
     background: var(--bg-mid);
@@ -356,14 +355,12 @@
     align-self: stretch;
     max-width: none;
     min-height: 0;
-    height: auto;
-    max-height: none;
     overflow-y: auto;
     overscroll-behavior: contain;
     background: var(--bg-mid);
     border: 1px solid rgba(185, 209, 243, 0.12);
     border-radius: 16px;
-    padding: 12px;
+    padding: 8px;
     -webkit-overflow-scrolling: touch;
     touch-action: pan-y;
   }
@@ -1343,7 +1340,7 @@
     grid-template-columns: repeat(2, minmax(0, 1fr));
     align-items: start;
     gap: 10px;
-    padding: 6px clamp(16px, 3vw, 32px) 16px;
+    padding: 6px clamp(12px, 2vw, 24px) 16px;
   }
 
   .card-divider {

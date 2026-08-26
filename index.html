@@ -72,10 +72,15 @@
     padding-bottom: env(safe-area-inset-bottom);
     padding-left: env(safe-area-inset-left);
     padding-right: env(safe-area-inset-right);
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
   }
 
   header {
     position: sticky;
+    flex: 0 0 auto;
     top: 0;
     z-index: 10;
     background: linear-gradient(145deg, rgba(16, 28, 45, 0.86), rgba(24, 45, 74, 0.82));
@@ -90,8 +95,8 @@
     display: flex;
     align-items: center;
     gap: 12px;
+    flex-wrap: nowrap;
   }
-
   header h1 {
     flex: 1;
     font-size: 22px;
@@ -109,6 +114,7 @@
 
   .header-icon-btn {
     flex-shrink: 0;
+    margin-left: auto;
     width: 36px;
     height: 36px;
     border-radius: 50%;
@@ -127,42 +133,41 @@
   }
 
   main {
+    flex: 1 1 auto;
+    min-height: 0;
     display: grid;
-    grid-template-columns: minmax(180px, 240px) minmax(0, 1fr);
-    gap: 20px;
+    grid-template-columns: 240px minmax(0, 1fr);
+    grid-template-rows: auto minmax(0, 1fr);
+    grid-template-areas:
+      "tags output"
+      "tags cards";
+    gap: 4px;
     align-items: start;
     padding: 16px 20px;
-    max-width: 1180px;
-    margin: 0 auto;
+    width: 100%;
+    max-width: none;
+    margin: 0;
     position: relative;
     z-index: 1;
-  }
-
-  .left-panel-container,
-  .right-panel-container {
-    min-width: 0;
-    min-height: 0;
-    overscroll-behavior: contain;
+    overflow: hidden;
   }
 
   .left-panel-container {
-    grid-column: 1;
-    grid-row: 1;
-    position: sticky;
-    top: 82px;
-    height: calc(100vh - 98px);
-    max-height: calc(100vh - 98px);
-    overflow-y: auto;
-    -webkit-overflow-scrolling: touch;
-    touch-action: pan-y;
+    min-width: 0;
+    min-height: 0;
   }
 
-  .right-panel-container {
-    grid-column: 2;
-    grid-row: 1;
-    height: calc(100vh - 98px);
-    max-height: calc(100vh - 98px);
+  .left-panel-container {
+    grid-area: tags;
+    width: 100%;
+    position: sticky;
+    top: 82px;
+    height: 100%;
+    max-height: 100%;
     overflow-y: auto;
+    overscroll-behavior: contain;
+    border-right: 1px solid rgba(185, 209, 243, 0.12);
+    padding-right: 10px;
     -webkit-overflow-scrolling: touch;
     touch-action: pan-y;
   }
@@ -170,6 +175,7 @@
   .tag-filter-panel {
     align-self: start;
     min-width: 0;
+    min-height: 70%;
     border-radius: 18px;
     background: var(--glass-bg);
     border: 1px solid var(--glass-border);
@@ -179,26 +185,23 @@
     padding: 12px;
   }
 
-  .tag-filter-header {
-    margin-bottom: 12px;
-    padding: 10px;
-    border: 1px solid var(--surface-border);
-    border-radius: 12px;
-    background: var(--surface-mid);
-  }
-
   .tag-filter-list {
     display: flex;
     flex-direction: column;
     gap: 8px;
+    overscroll-behavior: contain;
   }
 
   .tag-filter-categories {
     display: flex;
     gap: 6px;
     overflow-x: auto;
-    padding: 2px 2px 4px;
+    overscroll-behavior: contain;
+    padding: 2px 2px 12px;
+    margin-bottom: 12px;
+    border-bottom: 1px solid var(--surface-border);
     -webkit-overflow-scrolling: touch;
+    touch-action: pan-x;
   }
 
   .tag-filter-category,
@@ -234,6 +237,9 @@
     color: rgba(157, 214, 247, 0.62);
     border: 1px solid rgba(100, 181, 235, 0.24);
     box-shadow: 0 10px 20px rgba(18, 31, 52, 0.12);
+    min-height: 44px;
+    padding-top: 11px;
+    padding-bottom: 11px;
   }
 
   .tag-filter-chip.selected {
@@ -262,44 +268,90 @@
     padding: 11px 12px;
   }
 
-  .content-panel {
+  .output-area-wrapper,
+  .card-stack-wrapper {
+    width: 100%;
     min-width: 0;
+  }
+
+  .output-area-wrapper {
+    grid-area: output;
+    min-height: 0;
+    max-width: 704px;
+    margin: 0 auto;
+    padding: 0 12px;
+    margin-bottom: 12px;
+    position: relative;
+  }
+
+  .card-stack-wrapper {
+    grid-area: cards;
+    align-self: stretch;
+    max-width: none;
+    min-height: 0;
+    height: auto;
+    max-height: none;
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    border-top: 1px solid rgba(185, 209, 243, 0.14);
+    padding-top: 14px;
+    -webkit-overflow-scrolling: touch;
+    touch-action: pan-y;
   }
 
   @media (max-width: 760px) {
     main {
-      display: block;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
       padding: 16px;
       max-width: 680px;
     }
 
-    .left-panel-container,
-    .right-panel-container {
+    .left-panel-container {
+      flex: 0 1 40%;
+      min-height: 0;
       height: auto;
       max-height: none;
-      overflow: visible;
-      touch-action: auto;
+      overflow-y: auto;
+      overscroll-behavior: contain;
+      touch-action: pan-y;
     }
 
     .left-panel-container {
       position: static;
+      width: 100%;
+      max-width: none;
       margin-bottom: 16px;
+      border-right: 0;
+      padding-right: 0;
     }
 
     .tag-filter-panel {
       position: static;
+      min-height: 0;
     }
 
     .tag-filter-list {
       flex-direction: row;
       overflow-x: auto;
+      overscroll-behavior: contain;
       padding-bottom: 2px;
       -webkit-overflow-scrolling: touch;
+      touch-action: pan-x;
     }
 
     .tag-filter-chip {
       flex: 0 0 auto;
     }
+
+    .card-stack-wrapper {
+      flex: 1 1 0;
+      height: auto;
+      min-height: 0;
+      max-height: none;
+    }
+
   }
 
   /* 새 카드 버튼 */
@@ -835,6 +887,29 @@
     line-height: 1;
   }
 
+  .manage-prefix-actions {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    flex-shrink: 0;
+  }
+
+  .manage-prefix-order {
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    background: var(--surface-strong);
+    color: var(--text-soft);
+    border: 1px solid var(--surface-border-strong);
+    font-size: 14px;
+    font-weight: 700;
+    line-height: 1;
+  }
+
+  .manage-prefix-order:disabled {
+    opacity: 0.35;
+  }
+
   .modal-actions {
     display: flex;
     justify-content: flex-end;
@@ -881,9 +956,9 @@
     border-radius: 14px;
     display: flex;
     flex-direction: column;
-    height: 156px;
+    height: 180px;
     padding: 0;
-    margin: 0 auto 16px;
+    margin: 0 auto;
     box-shadow: var(--glass-shadow);
     border: 1px solid var(--glass-border);
     -webkit-backdrop-filter: blur(20px) saturate(116%);
@@ -896,8 +971,8 @@
 
   .output-copy-btn {
     position: absolute;
-    right: 12px;
-    bottom: 22px;
+    left: calc(100% + 12px);
+    bottom: 0;
     z-index: 1;
     flex: 0 0 auto;
     padding: 6px 10px;
@@ -907,6 +982,7 @@
     color: #e8f3ff;
     font-size: 12px;
     font-weight: 700;
+    white-space: nowrap;
   }
 
   .output-copy-btn:disabled {
@@ -921,7 +997,7 @@
 
   .output-area .text {
     flex: 1;
-    margin: 12px 92px 14px 16px;
+    margin: 12px;
     padding: 10px 12px;
     border: 1px solid rgba(130, 166, 214, 0.2);
     border-radius: 9px;
@@ -932,10 +1008,20 @@
     line-height: 1.5;
     min-height: 0;
     overflow-y: auto;
+    overscroll-behavior: contain;
+    touch-action: pan-y;
     white-space: pre-wrap;
     word-break: break-word;
     user-select: text;
     -webkit-user-select: text;
+  }
+
+  @media (max-width: 760px) {
+    .output-copy-btn {
+      position: static;
+      align-self: flex-end;
+      margin-top: 6px;
+    }
   }
 
   .hidden {
@@ -1034,6 +1120,11 @@
     font-size: 15px;
     font-weight: 700;
     line-height: 1.3;
+  }
+
+  .settings-menu-btn.settings-data-btn {
+    border-color: var(--sapphire-border);
+    background: var(--sapphire-soft);
   }
 
   .custom-sort-section {
@@ -1144,12 +1235,11 @@
 
   #cardList {
     width: 100%;
-    max-width: 680px;
-    margin-right: auto;
     display: grid;
     grid-template-columns: repeat(2, minmax(0, 1fr));
     align-items: start;
     gap: 10px;
+    padding: 0 clamp(24px, 5vw, 44px) 12px;
   }
 
   .card-divider {
@@ -1255,13 +1345,18 @@
     background: rgba(177, 195, 221, 0.52);
   }
 
+  .card:has(.title-row:active) {
+    background: var(--glass-bg);
+  }
+
   .card .content {
     flex: 1;
     min-width: 0;
+    --card-text-gap: 6px;
   }
 
   .card .title {
-    flex: 1;
+    flex: 1 1 auto;
     min-width: 0;
     font-family: inherit;
     font-size: 16px;
@@ -1302,7 +1397,9 @@
   .card .title-row {
     display: flex;
     align-items: center;
-    gap: 8px;
+    flex-wrap: wrap;
+    column-gap: 8px;
+    row-gap: 8px;
     padding: 12px 16px;
     background: linear-gradient(150deg, var(--navy-900), var(--navy-700));
     border-bottom: 1px solid rgba(211, 228, 255, 0.24);
@@ -1310,41 +1407,67 @@
 
   .card .card-tags {
     display: flex;
-    flex-shrink: 0;
-    gap: 4px;
-    max-width: 46%;
-    overflow: hidden;
+    flex: 0 1 auto;
+    min-width: 0;
+    flex-wrap: wrap;
+    gap: 6px;
+    justify-content: flex-end;
+  }
+
+  .card .title-row.tags-on-next-row .card-tags {
+    flex-basis: 100%;
+    max-width: none;
+    justify-content: flex-start;
   }
 
   .card .card-tag {
-    flex: 0 1 auto;
-    overflow: hidden;
-    text-overflow: ellipsis;
+    min-height: 28px;
     white-space: nowrap;
+    appearance: none;
     border-radius: 999px;
     background: var(--sapphire-soft);
     color: var(--sapphire-text);
     border: 1px solid var(--sapphire-border);
+    cursor: pointer;
     font-size: 11px;
     font-weight: 700;
     line-height: 1.3;
     padding: 3px 7px;
+    transition: transform 0.1s, filter 0.15s;
+  }
+
+  .card .card-tag:active {
+    filter: brightness(1.25);
+    transform: scale(0.92);
+  }
+
+  .card .card-tag:focus-visible {
+    outline: 2px solid var(--sapphire-text);
+    outline-offset: 2px;
   }
 
   .card .schedule-tag { flex: 0 0 auto; border-radius: 999px; background: linear-gradient(145deg, var(--gold-soft), var(--gold-deep)); color: var(--gold-text); border: 1px solid var(--gold-border); font-size: 11px; font-weight: 700; line-height: 1.3; padding: 3px 7px; box-shadow: 0 0 10px var(--gold-glow); }
 
   .card .schedule-note {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
     min-width: 0;
-    padding: 7px 16px 0;
+    padding: var(--card-text-gap) 16px 0;
     color: var(--gold-text);
     font-family: "SF Pro Text", "Apple SD Gothic Neo", "Noto Sans KR", sans-serif;
-    font-size: 12px;
-    font-weight: 600;
+    font-size: 11px;
+    font-weight: 500;
     line-height: 1.35;
     text-align: right;
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
+  }
+
+  .card .schedule-note + .preview {
+    margin-top: 0;
+    padding-top: 2px;
   }
 
   .card .preview-tag {
@@ -1607,23 +1730,21 @@
   <main>
     <div class="left-panel-container">
       <aside class="tag-filter-panel" aria-label="태그 선택 영역">
-        <div class="tag-filter-header">
-          <div id="tagFilterCategories" class="tag-filter-categories" role="tablist" aria-label="태그 분류"></div>
-        </div>
+        <div id="tagFilterCategories" class="tag-filter-categories" role="tablist" aria-label="태그 분류"></div>
         <div id="tagFilterList" class="tag-filter-list"></div>
         <button id="newCardBtn" class="new-card-btn">＋ 새 카드</button>
       </aside>
     </div>
 
-    <div class="right-panel-container">
-      <section class="content-panel">
-        <div id="outputArea" class="output-area">
-          <button id="outputCopyBtn" class="output-copy-btn" type="button" disabled>다시 복사</button>
-          <div id="outputText" class="text"></div>
-        </div>
+    <div class="output-area-wrapper">
+      <div id="outputArea" class="output-area">
+        <div id="outputText" class="text"></div>
+      </div>
+      <button id="outputCopyBtn" class="output-copy-btn" type="button" disabled>다시 복사</button>
+    </div>
 
-        <div id="cardList"></div>
-      </section>
+    <div class="card-stack-wrapper">
+      <div id="cardList"></div>
     </div>
   </main>
 
@@ -1721,6 +1842,9 @@
           <button id="settingsOpenCustomSortBtn" class="settings-menu-btn" type="button">카드 커스텀 정렬</button>
           <button id="settingsOpenVariableManageBtn" class="settings-menu-btn" type="button">변수 관리</button>
           <button id="settingsOpenTagManageBtn" class="settings-menu-btn" type="button">태그 관리</button>
+          <button id="settingsExportBtn" class="settings-menu-btn settings-data-btn" type="button">ZIP으로 내보내기</button>
+          <button id="settingsImportBtn" class="settings-menu-btn settings-data-btn" type="button">ZIP 불러오기</button>
+          <input id="settingsImportInput" type="file" accept=".zip,application/zip" hidden>
         </section>
         <section id="customSortSection" class="custom-sort-section hidden">
           <div class="settings-drawer-header">
@@ -1741,6 +1865,7 @@
 
   <div id="toast"></div>
 
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
 <script>
 (function () {
   'use strict';
@@ -1797,6 +1922,9 @@
   var settingsOpenCustomSortBtn = document.getElementById('settingsOpenCustomSortBtn');
   var settingsOpenVariableManageBtn = document.getElementById('settingsOpenVariableManageBtn');
   var settingsOpenTagManageBtn = document.getElementById('settingsOpenTagManageBtn');
+  var settingsExportBtn = document.getElementById('settingsExportBtn');
+  var settingsImportBtn = document.getElementById('settingsImportBtn');
+  var settingsImportInput = document.getElementById('settingsImportInput');
   var settingsMenuSection = document.getElementById('settingsMenuSection');
   var customSortSection = document.getElementById('customSortSection');
   var customSortBackBtn = document.getElementById('customSortBackBtn');
@@ -2263,6 +2391,84 @@
     }
   }
 
+  function getLocalStorageSnapshot() {
+    var snapshot = {};
+
+    for (var index = 0; index < localStorage.length; index += 1) {
+      var key = localStorage.key(index);
+      if (key !== null) snapshot[key] = localStorage.getItem(key);
+    }
+
+    return snapshot;
+  }
+
+  function downloadBlob(blob, fileName) {
+    var url = URL.createObjectURL(blob);
+    var link = document.createElement('a');
+    link.href = url;
+    link.download = fileName;
+    document.body.appendChild(link);
+    link.click();
+    link.remove();
+    setTimeout(function () { URL.revokeObjectURL(url); }, 0);
+  }
+
+  function exportLocalStorage() {
+    if (!window.JSZip) {
+      showToast('ZIP 기능을 불러오지 못했습니다');
+      return;
+    }
+
+    var zip = new window.JSZip();
+    zip.file('localStorage.json', JSON.stringify({
+      format: 'message-gen-local-storage',
+      version: 1,
+      exportedAt: new Date().toISOString(),
+      entries: getLocalStorageSnapshot()
+    }, null, 2));
+
+    zip.generateAsync({ type: 'blob', compression: 'DEFLATE' })
+      .then(function (blob) {
+        var date = new Date().toISOString().slice(0, 10);
+        downloadBlob(blob, 'text-generator-backup-' + date + '.zip');
+        showToast('ZIP으로 내보냈습니다');
+      })
+      .catch(function () {
+        showToast('ZIP 내보내기에 실패했습니다');
+      });
+  }
+
+  function importLocalStorage(file) {
+    if (!file || !window.JSZip) {
+      if (!window.JSZip) showToast('ZIP 기능을 불러오지 못했습니다');
+      return;
+    }
+
+    window.JSZip.loadAsync(file)
+      .then(function (zip) {
+        var storageFile = zip.file('localStorage.json');
+        if (!storageFile) throw new Error('missing storage file');
+        return storageFile.async('string');
+      })
+      .then(function (content) {
+        var backup = JSON.parse(content);
+        if (!backup || backup.format !== 'message-gen-local-storage' || backup.version !== 1 || !backup.entries || typeof backup.entries !== 'object' || Array.isArray(backup.entries)) {
+          throw new Error('invalid backup');
+        }
+
+        if (!window.confirm('현재 저장된 내용을 ZIP 백업으로 바꾸고 새로고침하시겠습니까?')) return;
+
+        localStorage.clear();
+        Object.keys(backup.entries).forEach(function (key) {
+          if (typeof backup.entries[key] === 'string') localStorage.setItem(key, backup.entries[key]);
+        });
+        window.location.reload();
+      })
+      .catch(function () {
+        showToast('올바른 ZIP 백업 파일이 아닙니다');
+      });
+  }
+
   function loadVariableTypes() {
     try {
       var raw = localStorage.getItem(VARIABLE_TYPE_STORAGE_KEY);
@@ -2481,6 +2687,16 @@
     return null;
   }
 
+  function getOrderedTags(tags) {
+    return tags.slice().sort(function (firstTag, secondTag) {
+      var firstIndex = SAVED_TAGS.indexOf(findSavedTag(firstTag));
+      var secondIndex = SAVED_TAGS.indexOf(findSavedTag(secondTag));
+      if (firstIndex === -1) firstIndex = SAVED_TAGS.length;
+      if (secondIndex === -1) secondIndex = SAVED_TAGS.length;
+      return firstIndex - secondIndex;
+    });
+  }
+
   function saveTags(tags) {
     var hasNewTag = false;
     tags.forEach(function (tag) {
@@ -2492,7 +2708,7 @@
   }
 
   function setCardTags(tags) {
-    newTagsEl.value = tags.map(function (tag) {
+    newTagsEl.value = getOrderedTags(tags).map(function (tag) {
       return tag.category + ':' + tag.name;
     }).join(', ');
   }
@@ -2596,7 +2812,7 @@
   }
 
   function renderCardTagControls() {
-    var selectedTags = parseTags(newTagsEl.value);
+    var selectedTags = getOrderedTags(parseTags(newTagsEl.value));
     selectedTagListEl.innerHTML = '';
     tagCategoryListEl.innerHTML = '';
     tagOptionListEl.innerHTML = '';
@@ -2698,9 +2914,11 @@
       tagCategoryTabsEl.appendChild(tab);
     });
 
-    SAVED_TAGS.filter(function (tag) {
+    var categoryTags = SAVED_TAGS.filter(function (tag) {
       return tag.category === activeTagManageCategory;
-    }).forEach(function (tag) {
+    });
+
+    categoryTags.forEach(function (tag, categoryIndex) {
       var row = document.createElement('div');
       row.className = 'manage-prefix-row';
 
@@ -2708,6 +2926,31 @@
       name.className = 'manage-prefix-name subtle';
       name.textContent = formatTag(tag);
       row.appendChild(name);
+
+      var actions = document.createElement('div');
+      actions.className = 'manage-prefix-actions';
+
+      var moveUpBtn = document.createElement('button');
+      moveUpBtn.className = 'manage-prefix-order';
+      moveUpBtn.type = 'button';
+      moveUpBtn.textContent = '↑';
+      moveUpBtn.disabled = categoryIndex === 0;
+      moveUpBtn.setAttribute('aria-label', formatTag(tag) + ' 위로 이동');
+      moveUpBtn.addEventListener('click', function () {
+        moveSavedTag(tag, -1);
+      });
+      actions.appendChild(moveUpBtn);
+
+      var moveDownBtn = document.createElement('button');
+      moveDownBtn.className = 'manage-prefix-order';
+      moveDownBtn.type = 'button';
+      moveDownBtn.textContent = '↓';
+      moveDownBtn.disabled = categoryIndex === categoryTags.length - 1;
+      moveDownBtn.setAttribute('aria-label', formatTag(tag) + ' 아래로 이동');
+      moveDownBtn.addEventListener('click', function () {
+        moveSavedTag(tag, 1);
+      });
+      actions.appendChild(moveDownBtn);
 
       var removeBtn = document.createElement('button');
       removeBtn.className = 'manage-prefix-remove';
@@ -2724,9 +2967,37 @@
         renderTagFilter();
         renderCards();
       });
-      row.appendChild(removeBtn);
+      actions.appendChild(removeBtn);
+      row.appendChild(actions);
       tagManageListEl.appendChild(row);
     });
+  }
+
+  function moveSavedTag(tag, direction) {
+    var categoryIndexes = [];
+    SAVED_TAGS.forEach(function (savedTag, index) {
+      if (savedTag.category === tag.category) categoryIndexes.push(index);
+    });
+
+    var currentCategoryIndex = -1;
+    categoryIndexes.forEach(function (savedIndex, index) {
+      var savedTag = SAVED_TAGS[savedIndex];
+      if (savedTag.category === tag.category && savedTag.name === tag.name) currentCategoryIndex = index;
+    });
+
+    var targetCategoryIndex = currentCategoryIndex + direction;
+    if (currentCategoryIndex === -1 || targetCategoryIndex < 0 || targetCategoryIndex >= categoryIndexes.length) return;
+
+    var currentIndex = categoryIndexes[currentCategoryIndex];
+    var targetIndex = categoryIndexes[targetCategoryIndex];
+    var movedTag = SAVED_TAGS[currentIndex];
+    SAVED_TAGS[currentIndex] = SAVED_TAGS[targetIndex];
+    SAVED_TAGS[targetIndex] = movedTag;
+    persistSavedTags();
+    renderTagManageList();
+    renderCardTagControls();
+    renderTagFilter();
+    renderCards();
   }
 
   function formatVariable(variable) {
@@ -3187,6 +3458,12 @@
 
       var titleRow = document.createElement('div');
       titleRow.className = 'title-row';
+      titleRow.addEventListener('pointerdown', function (e) {
+        e.stopPropagation();
+      });
+      titleRow.addEventListener('click', function (e) {
+        e.stopPropagation();
+      });
 
       if (item.scheduledMessage) {
         var scheduleTag = document.createElement('span');
@@ -3201,10 +3478,18 @@
       if (item.tags.length > 0) {
         var tags = document.createElement('div');
         tags.className = 'card-tags';
-        item.tags.forEach(function (tag) {
-          var tagChip = document.createElement('span');
+        getOrderedTags(item.tags).forEach(function (tag) {
+          var tagChip = document.createElement('button');
           tagChip.className = 'card-tag';
+          tagChip.type = 'button';
           tagChip.textContent = formatTag(tag);
+          tagChip.setAttribute('aria-label', formatTag(tag) + ' 태그로 이동');
+          tagChip.addEventListener('click', function () {
+            activeTagFilterCategory = tag.category;
+            activeTagFilter = tag;
+            renderTagFilter();
+            renderCards();
+          });
           tags.appendChild(tagChip);
         });
         titleRow.appendChild(tags);
@@ -3244,6 +3529,9 @@
       wrapper.appendChild(card);
       attachSwipeHandlers(wrapper, card);
       cardListEl.appendChild(wrapper);
+      if (tags && tags.offsetTop > title.offsetTop) {
+        titleRow.classList.add('tags-on-next-row');
+      }
     });
   }
 
@@ -3507,6 +3795,14 @@
   settingsOpenTagManageBtn.addEventListener('click', function () {
     closeSettingsDrawer();
     openTagManageModal();
+  });
+  settingsExportBtn.addEventListener('click', exportLocalStorage);
+  settingsImportBtn.addEventListener('click', function () {
+    settingsImportInput.value = '';
+    settingsImportInput.click();
+  });
+  settingsImportInput.addEventListener('change', function () {
+    importLocalStorage(settingsImportInput.files[0]);
   });
   addDividerBtn.addEventListener('click', addDividerToLayout);
   resetLayoutBtn.addEventListener('click', function () {

@@ -2082,6 +2082,54 @@
   var activeTagManageCategory = null;
   var activeVariableManageType = null;
   var SWIPE_ACTIONS_WIDTH = 148;
+  var modalScrollState = null;
+
+  function getModalScrollTargets() {
+    return [
+      document.querySelector('.left-panel-container'),
+      document.querySelector('.card-stack-wrapper'),
+      outputText
+    ].filter(function (element) { return element; });
+  }
+
+  function beginModalSession() {
+    if (!modalScrollState) {
+      modalScrollState = {
+        windowY: window.scrollY,
+        targets: getModalScrollTargets().map(function (element) {
+          return { element: element, top: element.scrollTop };
+        })
+      };
+    }
+    document.body.classList.add('modal-open');
+  }
+
+  function endModalSession() {
+    var state = modalScrollState;
+    modalScrollState = null;
+
+    if (!state) {
+      document.body.classList.remove('modal-open');
+      return;
+    }
+
+    if (document.activeElement && typeof document.activeElement.blur === 'function') {
+      document.activeElement.blur();
+    }
+    document.body.classList.remove('modal-open');
+
+    function restore() {
+      if (modalScrollState !== null) return;
+      window.scrollTo(0, state.windowY);
+      state.targets.forEach(function (target) {
+        target.element.scrollTop = target.top;
+      });
+    }
+
+    restore();
+    window.requestAnimationFrame(restore);
+    window.setTimeout(restore, 300);
+  }
 
   /* ---------- 저장소 ---------- */
 
@@ -2438,14 +2486,14 @@
     settingsMenuSection.classList.remove('hidden');
     customSortSection.classList.add('hidden');
     settingsDrawerOverlay.classList.remove('hidden');
-    document.body.classList.add('modal-open');
+    beginModalSession();
   }
 
   function closeSettingsDrawer() {
     settingsDrawerOverlay.classList.add('hidden');
     settingsMenuSection.classList.remove('hidden');
     customSortSection.classList.add('hidden');
-    document.body.classList.remove('modal-open');
+    endModalSession();
   }
 
   function openCustomSortSection() {
@@ -3821,7 +3869,7 @@
     editingItem = item || null;
     modalTitleEl.textContent = editingItem ? '카드 편집' : '새 카드';
     modalOverlay.classList.remove('hidden');
-    document.body.classList.add('modal-open');
+    beginModalSession();
     newTitleEl.value = editingItem ? editingItem.title : '';
     newTextEl.value = editingItem ? editingItem.text : '';
     newTagsEl.value = editingItem ? editingItem.tags.map(function (tag) {
@@ -3838,8 +3886,7 @@
 
   function closeModal() {
     modalOverlay.classList.add('hidden');
-    document.body.classList.remove('modal-open');
-    newTextEl.blur();
+    endModalSession();
     editingItem = null;
   }
 
@@ -3913,7 +3960,7 @@
     });
 
     variableOverlay.classList.remove('hidden');
-    document.body.classList.add('modal-open');
+    beginModalSession();
 
     goToVariableStep(0);
   }
@@ -3945,7 +3992,7 @@
 
   function closeVariableModal() {
     variableOverlay.classList.add('hidden');
-    document.body.classList.remove('modal-open');
+    endModalSession();
     activeVariableItem = null;
     variableStepGroups = [];
     currentVariableStep = 0;
@@ -3957,12 +4004,12 @@
     activeVariableManageType = null;
     renderVariableManageList();
     variableManageOverlay.classList.remove('hidden');
-    document.body.classList.add('modal-open');
+    beginModalSession();
   }
 
   function closeVariableManageModal() {
     variableManageOverlay.classList.add('hidden');
-    document.body.classList.remove('modal-open');
+    endModalSession();
   }
 
   function openTagManageModal() {
@@ -3971,13 +4018,13 @@
     activeTagManageCategory = null;
     renderTagManageList();
     tagManageOverlay.classList.remove('hidden');
-    document.body.classList.add('modal-open');
+    beginModalSession();
     tagLabelEl.focus();
   }
 
   function closeTagManageModal() {
     tagManageOverlay.classList.add('hidden');
-    document.body.classList.remove('modal-open');
+    endModalSession();
   }
 
   /* ---------- 이벤트 ---------- */
